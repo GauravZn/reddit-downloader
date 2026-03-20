@@ -1,0 +1,31 @@
+{
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "manifest_version": 3,
+  "name": "Reddit Picture Gallery Downloader",
+  "version": "1.2",
+  "description": "One-click high-res download for Reddit galleries.",
+  "permissions": [
+    "downloads"
+  ],
+  "host_permissions": [
+    "*://*.reddit.com/*",
+    "*://*.redd.it/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.reddit.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
