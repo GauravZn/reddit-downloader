@@ -4,8 +4,9 @@ A lightweight, frictionless Chrome Extension that allows you to download high-re
 
 No sketchy third-party websites, no copied links, and no annoying pop-up ads. Everything happens locally on your machine.
 
+![Animation2](https://github.com/user-attachments/assets/c19eb0d4-8bb3-4093-8470-1d2bcd6b0913)
 
-![Animation](https://github.com/user-attachments/assets/6ff9fdae-a98f-4372-971a-6da3ea681d56)
+
 
 ## ✨ Features
 
