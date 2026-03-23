@@ -13,7 +13,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     postData = postData.crosspost_parent_list[0];
                 }
 
-                let mediaUrls = [];
+                let downloadJobs = [];
+                let textCount = 0;
 
                 // 1. Multi-image/GIF gallery logic
                 if (postData.is_gallery && postData.media_metadata) {
@@ -23,60 +24,96 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         let media = postData.media_metadata[mediaId];
 
                         if (media && media.s) {
-                            // Prioritize standard high-res image
                             if (media.s.u) {
-                                mediaUrls.push(media.s.u.replace(/&amp;/g, '&'));
-                            }
-                            // Fallback to gallery GIF if it's an animated gallery
-                            else if (media.s.gif) {
-                                mediaUrls.push(media.s.gif.replace(/&amp;/g, '&'));
+                                downloadJobs.push({ url: media.s.u.replace(/&amp;/g, '&') });
+                            } else if (media.s.gif) {
+                                downloadJobs.push({ url: media.s.gif.replace(/&amp;/g, '&') });
                             }
                         }
                     });
                 }
-                // 2. Single image, native GIF, or Imgur .gifv logic
-                // We explicitly ignore postData.is_video to filter out Reddit native videos
+                // 2. Single image, native GIF, or Imgur .gifv logic (Excludes Reddit Video)
                 else if (postData.url && !postData.is_video) {
                     let url = postData.url;
 
-                    // Handle Imgur .gifv (Chrome prefers downloading these as mp4 to animate them)
                     if (url.endsWith('.gifv')) {
                         url = url.replace('.gifv', '.mp4');
                     }
 
-                    // Match standard image/gif extensions
                     if (url.match(/\.(jpg|jpeg|png|gif|webp|mp4)/i)) {
-                        mediaUrls.push(url);
+                        downloadJobs.push({ url });
                     }
                 }
 
+                // 3. Text support (Strictly for pure text posts - skips if images were found)
+                if (downloadJobs.length === 0 && (postData.is_self || (postData.selftext && postData.selftext.trim().length > 0))) {
+                    let textBody = postData.selftext ? postData.selftext.trim() : "";
+                    const header = [
+                        `Title: ${postData.title || customTitle}`,
+                        `Author: u/${postData.author || 'unknown'}`,
+                        `Subreddit: r/${postData.subreddit || 'unknown'}`,
+                        `URL: ${request.url}`,
+                        ''
+                    ].join('\n');
+                    
+                    const fullText = textBody.length > 0 ? `${header}\n${textBody}` : header;
+                    downloadJobs.push({ textContent: fullText, forceExt: 'txt', kind: 'text' });
+                    textCount += 1;
+                }
+
                 // --- Download Logic & File Naming ---
-                if (mediaUrls.length > 0) {
-                    mediaUrls.forEach((url, index) => {
-                        let cleanUrlForExt = url.split('?')[0];
-                        let ext = cleanUrlForExt.split('.').pop();
+                if (downloadJobs.length > 0) {
+                    let index = 0;
+                    let padLength = Math.max(2, downloadJobs.length.toString().length);
+
+                    downloadJobs.forEach((job) => {
+                        index += 1;
+                        let ext = job.forceExt || 'png';
+                        let url = job.url;
+
+                        if (url) {
+                            let cleanUrlForExt = url.split('?')[0];
+                            let derivedExt = cleanUrlForExt.split('.').pop();
+                            if (derivedExt && derivedExt.length <= 4) {
+                                ext = derivedExt;
+                            }
+                        }
 
                         // Safety fallback
                         if (ext.length > 4) ext = 'png';
 
-                        // Calculate padding (e.g., 01, 02... or 001, 002 if over 100 images)
-                        let padLength = Math.max(2, mediaUrls.length.toString().length);
-                        let paddedIndex = String(index + 1).padStart(padLength, '0');
-
-                        // Format filename: "Title.png" or "Title (01).png"
-                        let filename = mediaUrls.length > 1
+                        let paddedIndex = String(index).padStart(padLength, '0');
+                        let filename = downloadJobs.length > 1
                             ? `Reddit_Grabber/${customTitle} (${paddedIndex}).${ext}`
                             : `Reddit_Grabber/${customTitle}.${ext}`;
 
-                        chrome.downloads.download({
-                            url: url,
-                            filename: filename,
-                            conflictAction: 'uniquify'
-                        });
+                        // Execute Download
+                        if (job.textContent) {
+                            // Manifest V3 Text Download Fix (Data URI)
+                            const base64Text = btoa(unescape(encodeURIComponent(job.textContent)));
+                            const dataUrl = `data:text/plain;base64,${base64Text}`;
+                            
+                            chrome.downloads.download({
+                                url: dataUrl,
+                                filename: filename,
+                                conflictAction: 'uniquify'
+                            });
+                        } else {
+                            chrome.downloads.download({
+                                url: url,
+                                filename: filename,
+                                conflictAction: 'uniquify'
+                            });
+                        }
                     });
-                    sendResponse({ success: true, count: mediaUrls.length });
+                    
+                    sendResponse({
+                        success: true,
+                        count: downloadJobs.length,
+                        texts: textCount
+                    });
                 } else {
-                    sendResponse({ success: false }); // No images/gifs found
+                    sendResponse({ success: false }); 
                 }
             })
             .catch(err => {
@@ -84,6 +121,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ success: false });
             });
 
-        return true; // Keep the message channel open for async fetch
+        return true; 
     }
 });
