@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Downloader Settings</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #202124;
+            --text-muted: #5f6368;
+            --border: #dadce0;
+            --primary: #1a73e8;
+            --primary-hover: #174ea6;
+            --input-bg: #ffffff;
+            --success: #188038;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #292a2d;
+                --text-main: #e8eaed;
+                --text-muted: #9aa0a6;
+                --border: #5f6368;
+                --primary: #8ab4f8;
+                --primary-hover: #aecbfa;
+                --input-bg: #202124;
+                --success: #81c995;
+            }
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            width: 320px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .setting-group {
+            margin-bottom: 6px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--text-muted);
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            line-height: 1.4;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            button {
+                color: #202124;
+            }
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        #status {
+            margin-top: 6px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--success);
+            height: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+      <h2>Downloader Settings</h2>
+      <div class="setting-group">
+            <label for="folderName">Base Download Folder</label>
+            <input type="text" id="folderName" placeholder="will be created in your default downloads folder" />
+          </div>
+      <div class="setting-group">
+            <label for="downloadMode">Download Mode</label>
+            <select id="downloadMode">
+                  <option value="folder">Download as a Folder</option>
+                  <option value="zip">Zip Posts</option>
+                  <option value="individual">Download Individuals (Direct to base)</option>
+                </select>
+            <div id="modeDescription" class="helper-text"></div>
+          </div>
+      <div class="setting-group">
+            <label for="buttonTheme">Button styles</label>
+            <select id="buttonTheme">
+                  <option value="theme-native">Native Reddit (Orange Pill)</option>
+                  <option value="theme-premium">Premium Black (Sleek & Clean)</option>
+                  <option value="theme-modern">Modern Blue (Trustworthy)</option>
+                  <option value="theme-minimal">Minimal Light (Clean Outline)</option>
+                </select>
+          </div>
+      <button id="saveBtn">Save Settings</button>
+      <div id="status"></div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

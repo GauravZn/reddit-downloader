@@ -1,126 +1,119 @@
+// Import JSZip for the bundling feature
+importScripts('jszip.min.js');
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "fetchAndDownload") {
-        let jsonUrl = request.url + '.json';
-        let customTitle = request.title;
+  if (request.action === "fetchAndDownload") {
+    
+    // Fetch the Reddit JSON
+    fetch(request.url + '.json')
+      .then(response => response.json())
+      .then(data => {
+        const postData = data[0].data.children[0].data;
+        let imageUrls = [];
 
-        fetch(jsonUrl)
-            .then(response => response.json())
-            .then(data => {
-                let postData = data[0].data.children[0].data;
+        // Parse Gallery Images
+        if (postData.is_gallery && postData.media_metadata) {
+          const galleryItems = postData.gallery_data.items;
+          for (let item of galleryItems) {
+            const mediaId = item.media_id;
+            const media = postData.media_metadata[mediaId];
+            if (media && media.s && media.s.u) {
+              let cleanUrl = media.s.u.replace(/&amp;/g, '&');
+              imageUrls.push(cleanUrl);
+            }
+          }
+        } 
+        // Parse Single Images
+        else if (postData.url && (postData.url.match(/\.(jpg|png|jpeg)$/i))) {
+          imageUrls.push(postData.url);
+        } else {
+          sendResponse({ success: false, message: "No standard images found." });
+          return;
+        }
 
-                // Crosspost Support
-                if (postData.crosspost_parent_list && postData.crosspost_parent_list.length > 0) {
-                    postData = postData.crosspost_parent_list[0];
-                }
+        if (imageUrls.length === 0) {
+          sendResponse({ success: false, message: "Failed to extract images." });
+          return;
+        }
 
-                let downloadJobs = [];
-                let textCount = 0;
+        // Get User Settings and Download
+        chrome.storage.sync.get({
+          preferredFolder: 'reddit_downloads',
+          downloadMode: 'folder' 
+        }, (settings) => {
+          
+          const baseFolder = settings.preferredFolder.trim() || 'reddit_downloads';
+          const mode = settings.downloadMode;
+          const title = request.title;
 
-                // 1. Multi-image/GIF gallery logic
-                if (postData.is_gallery && postData.media_metadata) {
-                    let galleryItems = postData.gallery_data.items;
-                    galleryItems.forEach(item => {
-                        let mediaId = item.media_id;
-                        let media = postData.media_metadata[mediaId];
+          // ROUTE 1: Folder
+          if (mode === 'folder') {
+            imageUrls.forEach((imgUrl, index) => {
+              let fileNum = String(index + 1).padStart(2, '0');
+              chrome.downloads.download({
+                url: imgUrl,
+                filename: `${baseFolder}/${title}/${title}(${fileNum}).jpg`,
+                saveAs: false
+              });
+            });
+            sendResponse({ success: true, count: imageUrls.length });
 
-                        if (media && media.s) {
-                            if (media.s.u) {
-                                downloadJobs.push({ url: media.s.u.replace(/&amp;/g, '&') });
-                            } else if (media.s.gif) {
-                                downloadJobs.push({ url: media.s.gif.replace(/&amp;/g, '&') });
-                            }
-                        }
-                    });
-                }
-                // 2. Single image, native GIF, or Imgur .gifv logic (Excludes Reddit Video)
-                else if (postData.url && !postData.is_video) {
-                    let url = postData.url;
+          // ROUTE 2: Individual
+          } else if (mode === 'individual') {
+            imageUrls.forEach((imgUrl, index) => {
+              let fileNum = String(index + 1).padStart(2, '0');
+              chrome.downloads.download({
+                url: imgUrl,
+                filename: `${baseFolder}/${title}(${fileNum}).jpg`,
+                saveAs: false
+              });
+            });
+            sendResponse({ success: true, count: imageUrls.length });
 
-                    if (url.endsWith('.gifv')) {
-                        url = url.replace('.gifv', '.mp4');
-                    }
+          // ROUTE 3: Zip File
+          } else if (mode === 'zip') {
+            const zip = new JSZip();
+            const fetchPromises = imageUrls.map(async (imgUrl, index) => {
+              let fileNum = String(index + 1).padStart(2, '0');
+              try {
+                const imgResponse = await fetch(imgUrl);
+                const blob = await imgResponse.blob();
+                zip.file(`${title}(${fileNum}).jpg`, blob);
+              } catch (error) {
+                console.error("Failed to fetch image for zip:", error);
+              }
+            });
 
-                    if (url.match(/\.(jpg|jpeg|png|gif|webp|mp4)/i)) {
-                        downloadJobs.push({ url });
-                    }
-                }
+            Promise.all(fetchPromises).then(async () => {
+              const zipBlob = await zip.generateAsync({ type: "blob" });
+              const reader = new FileReader();
+              reader.onloadend = function() {
+                chrome.downloads.download({
+                  url: reader.result, 
+                  filename: `${baseFolder}/${title}.zip`,
+                  saveAs: false
+                });
+              };
+              reader.readAsDataURL(zipBlob);
+            });
 
-                // 3. Text support (Strictly for pure text posts - skips if images were found)
-                if (downloadJobs.length === 0 && (postData.is_self || (postData.selftext && postData.selftext.trim().length > 0))) {
-                    let textBody = postData.selftext ? postData.selftext.trim() : "";
-                    const header = [
-                        `Title: ${postData.title || customTitle}`,
-                        `Author: u/${postData.author || 'unknown'}`,
-                        `Subreddit: r/${postData.subreddit || 'unknown'}`,
-                        `URL: ${request.url}`,
-                        ''
-                    ].join('\n');
-                    
-                    const fullText = textBody.length > 0 ? `${header}\n${textBody}` : header;
-                    downloadJobs.push({ textContent: fullText, forceExt: 'txt', kind: 'text' });
-                    textCount += 1;
-                }
+            sendResponse({ success: true, count: imageUrls.length });
+          }
+        });
+      })
+      .catch(error => {
+        console.error("Error processing Reddit JSON:", error);
+        sendResponse({ success: false });
+      });
 
-                // --- Download Logic & File Naming ---
-                if (downloadJobs.length > 0) {
-                    let index = 0;
-                    let padLength = Math.max(2, downloadJobs.length.toString().length);
+    return true; 
+  }
+});
 
-                    downloadJobs.forEach((job) => {
-                        index += 1;
-                        let ext = job.forceExt || 'png';
-                        let url = job.url;
 
-                        if (url) {
-                            let cleanUrlForExt = url.split('?')[0];
-                            let derivedExt = cleanUrlForExt.split('.').pop();
-                            if (derivedExt && derivedExt.length <= 4) {
-                                ext = derivedExt;
-                            }
-                        }
-
-                        // Safety fallback
-                        if (ext.length > 4) ext = 'png';
-
-                        let paddedIndex = String(index).padStart(padLength, '0');
-                        let filename = downloadJobs.length > 1
-                            ? `Reddit_Grabber/${customTitle} (${paddedIndex}).${ext}`
-                            : `Reddit_Grabber/${customTitle}.${ext}`;
-
-                        // Execute Download
-                        if (job.textContent) {
-                            // Manifest V3 Text Download Fix (Data URI)
-                            const base64Text = btoa(unescape(encodeURIComponent(job.textContent)));
-                            const dataUrl = `data:text/plain;base64,${base64Text}`;
-                            
-                            chrome.downloads.download({
-                                url: dataUrl,
-                                filename: filename,
-                                conflictAction: 'uniquify'
-                            });
-                        } else {
-                            chrome.downloads.download({
-                                url: url,
-                                filename: filename,
-                                conflictAction: 'uniquify'
-                            });
-                        }
-                    });
-                    
-                    sendResponse({
-                        success: true,
-                        count: downloadJobs.length,
-                        texts: textCount
-                    });
-                } else {
-                    sendResponse({ success: false }); 
-                }
-            })
-            .catch(err => {
-                console.error("Download Error:", err);
-                sendResponse({ success: false });
-            });
-
-        return true; 
-    }
+// Auto-open the welcome page on first install
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === "install") {
+    chrome.tabs.create({ url: "welcome.html" });
+  }
 });

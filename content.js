@@ -1,172 +1,195 @@
-// Helper to find the post we are currently looking at
-function getActivePost() {
-    let currentPath = window.location.pathname;
-    const allPosts = document.querySelectorAll('shreddit-post');
-    for (let post of allPosts) {
-        let permalink = post.getAttribute('permalink');
-        if (permalink && currentPath.includes(permalink.replace(/\/$/, ""))) {
-            return post;
-        }
-    }
-    return document.querySelector('shreddit-post');
+const themeStyles = `
+  /* Base Structure */
+  .reddit-gallery-dl-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999999;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* 1. Native Reddit (Orange Pill) */
+  .theme-native { 
+    background: linear-gradient(135deg, #FF4500 0%, #FF8C00 100%); 
+    color: white; 
+    border: none; 
+    border-radius: 50px; 
+    box-shadow: 0 8px 16px rgba(255, 69, 0, 0.25); 
+  }
+  .theme-native:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 12px 20px rgba(255, 69, 0, 0.35); 
+  }
+
+  /* 2. Premium Black (No emojis, white text on black) */
+  .theme-premium {
+    background-color: #0F0F0F;
+    color: #FFFFFF;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.3px;
+    font-weight: 500;
+  }
+  .theme-premium:hover {
+    background-color: #202020;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  /* 3. Modern Blue (Google/Twitter style) */
+  .theme-modern { 
+    background-color: #1A73E8; 
+    color: #FFFFFF; 
+    border: none; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+  }
+  .theme-modern:hover { 
+    background-color: #1557B0; 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(26, 115, 232, 0.4);
+  }
+
+  /* 4. Minimal Light (Clean white with outline) */
+  .theme-minimal { 
+    background-color: #FFFFFF; 
+    color: #3C4043; 
+    border: 1px solid #DADCE0; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .theme-minimal:hover { 
+    background-color: #F8F9FA;
+    color: #202124;
+    border-color: #BDC1C6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.innerText = themeStyles;
+document.head.appendChild(styleSheet);
+
+
+function getButtonContent(themeName) {
+    if (themeName === 'theme-premium') {
+        return `<span>Download</span>`; // no emojis for premium black
+    }
+    return `<span style="font-size: 18px;">ðŸš€</span><span>Download Gallery</span>`; // rocket for everything else
 }
 
+function getLoadingText(themeName) {
+    if (themeName === 'theme-premium') return "Fetching...";
+    return "â³ Fetching...";
+}
+
+function getSuccessText(themeName, count) {
+    if (themeName === 'theme-premium') return `${count} Saved`;
+    return `âœ… ${count} Files Saved!`;
+}
+
+function getFailText(themeName) {
+    if (themeName === 'theme-premium') return "No Images";
+    return "âŒ No Images";
+}
+
+// main button logic
 function manageFloatingButton() {
-    const isPostPage = window.location.href.includes('/comments/');
-    let btn = document.getElementById('gallery-grabber-btn');
+    const isPostPage = window.location.pathname.includes('/comments/');
+    let btn = document.getElementById('reddit-custom-dl-btn');
 
-    if (!isPostPage) {
-        if (btn) btn.remove();
-        return;
-    }
+    if (!isPostPage) {
+        if (btn) btn.remove();
+        return;
+    }
+    if (btn) return;
 
-    // 1. Determine the core post type (image, gallery, text, video)
-    let activePost = getActivePost();
-    let postType = activePost ? activePost.getAttribute('post-type') : 'unknown';
-    
-    // --- THE CLEAN UX DYNAMIC BUTTON STATES ---
-    let buttonText = "Download Media";
-    let buttonIcon = "🚀";
-    let isSupported = true;
+    btn = document.createElement("button");
+    btn.id = "reddit-custom-dl-btn";
 
-    if (postType === 'image') {
-        buttonText = "Download Image";
-        buttonIcon = "🖼️";
-    } else if (postType === 'gallery') {
-        buttonText = "Download Gallery";
-        buttonIcon = "🚀";
-    } else if (postType === 'text') {
-        buttonText = "Download Post (Text)";
-        buttonIcon = "📄";
-    } else if (postType === 'video') {
-        buttonText = "Video Not Supported";
-        buttonIcon = "⚠️";
-        isSupported = false;
-    } else if (postType === 'link') {
-        buttonText = "Link Not Supported";
-        buttonIcon = "🔗";
-        isSupported = false;
-    }
+    // grab the setting and build the initial button
+    chrome.storage.sync.get({ buttonTheme: 'theme-native' }, (settings) => {
+        btn.className = `reddit-gallery-dl-btn ${settings.buttonTheme}`;
+        btn.innerHTML = getButtonContent(settings.buttonTheme);
+    });
 
-    // Inject the button if it doesn't exist yet
-    if (!btn) {
-        btn = document.createElement("button");
-        btn.id = "gallery-grabber-btn";
-        document.body.appendChild(btn);
-    }
+    document.body.appendChild(btn);
 
-    let stateKey = postType;
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        let originalText = btn.innerHTML;
 
-    // Update button styling and logic dynamically as you scroll
-    if (btn.dataset.stateKey !== stateKey && btn.dataset.fetching !== "true" && !btn.innerHTML.includes("✅") && !btn.innerHTML.includes("❌")) {
-        
-        btn.innerHTML = `
-            <span style="margin-right: 10px; font-size: 18px;">${buttonIcon}</span>
-            <span>${buttonText}</span>
-        `;
-        
-        btn.dataset.stateKey = stateKey;
+        // Find out what theme is currently active to set the right loading text
+        let currentTheme = Array.from(btn.classList).find(c => c.startsWith('theme-')) || 'theme-native';
+        btn.innerHTML = getLoadingText(currentTheme);
 
-        // Base Styling
-        const style = btn.style;
-        style.position = "fixed";
-        style.bottom = "30px";
-        style.right = "30px";
-        style.zIndex = "999999";
-        style.padding = "14px 28px";
-        style.border = "none";
-        style.borderRadius = "50px";
-        style.fontSize = "16px";
-        style.fontWeight = "bold";
-        style.display = "flex";
-        style.alignItems = "center";
-        style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-        style.transition = "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+        let rawTitle = "";
+        let currentPath = window.location.pathname;
+        const allPosts = document.querySelectorAll('shreddit-post');
+        let activePost = null;
 
-        // Change colors based on if we support the media or not
-        if (isSupported) {
-            style.background = "linear-gradient(135deg, #FF4500 0%, #FF8C00 100%)";
-            style.color = "white";
-            style.cursor = "pointer";
-            style.boxShadow = "0 10px 20px rgba(255, 69, 0, 0.3)";
-            style.opacity = "1";
-            
-            btn.onmouseover = () => {
-                style.transform = "translateY(-5px) scale(1.05)";
-                style.boxShadow = "0 15px 25px rgba(255, 69, 0, 0.4)";
-            };
-            btn.onmouseout = () => {
-                style.transform = "translateY(0) scale(1)";
-                style.boxShadow = "0 10px 20px rgba(255, 69, 0, 0.3)";
-            };
-        } else {
-            // Greyed out / Disabled look for unsupported media
-            style.background = "#4a4a4a"; 
-            style.color = "#aaaaaa"; 
-            style.cursor = "not-allowed";
-            style.boxShadow = "none";
-            style.opacity = "0.8";
-            style.transform = "none";
-            
-            btn.onmouseover = null;
-            btn.onmouseout = null;
-        }
+        for (let post of allPosts) {
+            let permalink = post.getAttribute('permalink');
+            if (permalink && currentPath.includes(permalink.replace(/\/$/, ""))) {
+                activePost = post;
+                break;
+            }
+        }
 
-        // The Click Listener
-        btn.onclick = (e) => {
-            e.preventDefault();
-            
-            if (!isSupported) return; 
+        if (!activePost) activePost = document.querySelector('shreddit-post');
 
-            let originalText = btn.innerHTML;
-            btn.dataset.fetching = "true";
-            btn.innerHTML = "⏳ Fetching...";
-            btn.style.transform = "scale(0.95)";
+        if (activePost && activePost.getAttribute('post-title')) {
+            rawTitle = activePost.getAttribute('post-title');
+        } else if (document.title) {
+            rawTitle = document.title.split(' : ')[0].split(' | ')[0];
+        } else {
+            const standardH1 = document.querySelector('h1');
+            if (standardH1) rawTitle = standardH1.innerText;
+        }
 
-            // Grab title logic
-            let currentActivePost = getActivePost();
-            let rawTitle = "";
-            
-            if (currentActivePost && currentActivePost.getAttribute('post-title')) {
-                rawTitle = currentActivePost.getAttribute('post-title');
-            } else if (document.title) {
-                rawTitle = document.title.split(' : ')[0].split(' | ')[0];
-            } else {
-                const standardH1 = document.querySelector('h1');
-                if (standardH1) rawTitle = standardH1.innerText;
-            }
+        if (!rawTitle || rawTitle.trim().length === 0 || rawTitle.includes('reddit: the front page')) {
+            const now = new Date();
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            rawTitle = `${months[now.getMonth()]}-${now.getDate()}-${now.getFullYear()}_${now.getHours()}-${now.getMinutes()}`;
+        }
 
-            if (!rawTitle || rawTitle.trim().length === 0 || rawTitle.includes('reddit: the front page')) {
-                const now = new Date();
-                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                rawTitle = `${months[now.getMonth()]}-${now.getDate()}-${now.getFullYear()}_${now.getHours()}-${now.getMinutes()}`;
-            }
+        let cleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 80).trim();
+        let currentUrl = window.location.href.split('?')[0].split('#')[0].replace(/\/$/, "");
 
-            let cleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 80).trim();
-            let currentUrl = window.location.href.split('?')[0].split('#')[0].replace(/\/$/, "");
-
-            chrome.runtime.sendMessage({
-                action: "fetchAndDownload",
-                url: currentUrl,
-                title: cleanTitle
-            }, (response) => {
-                btn.dataset.fetching = "false";
-                btn.style.transform = "scale(1)";
-                
-                if (response && response.success) {
-                    if (response.texts > 0) {
-                        btn.innerHTML = `✅ Text File Saved!`;
-                    } else {
-                        btn.innerHTML = `✅ ${response.count} file` + (response.count > 1 ? "s" : "") + ` saved!`;
-                    }
-                } else {
-                    btn.innerHTML = "❌ No media/text found";
-                }
-                
-                setTimeout(() => btn.dataset.stateKey = "reset", 3000);
-            });
-        };
-    }
+        chrome.runtime.sendMessage({
+            action: "fetchAndDownload",
+            url: currentUrl,
+            title: cleanTitle
+        }, (response) => {
+            if (response && response.success) {
+                btn.innerHTML = getSuccessText(currentTheme, response.count);
+            } else {
+                btn.innerHTML = getFailText(currentTheme);
+            }
+            setTimeout(() => btn.innerHTML = originalText, 3000);
+        });
+    });
 }
 
 setInterval(manageFloatingButton, 500);
+
+// Watch for live changes from the popup
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (changes.buttonTheme) {
+        const activeBtn = document.getElementById("reddit-custom-dl-btn");
+        if (activeBtn) {
+            activeBtn.className = `reddit-gallery-dl-btn ${changes.buttonTheme.newValue}`;
+            activeBtn.innerHTML = getButtonContent(changes.buttonTheme.newValue);
+        }
+    }
+});

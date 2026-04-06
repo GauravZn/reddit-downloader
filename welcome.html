@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome!</title>
+    <link rel="icon" type="image/png" sizes="48x48" href="icon48.png">
+    <link rel="shortcut icon" type="image/png" href="icon128.png">
+    <script src="welcome.js"></script>
+    <style>
+        :root {
+            /* Ultra Minimal Light Theme */
+            --bg-hero: #FFFFFF;
+            --bg-features: #F9FAFB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            --border-hover: #D1D5DB;
+            
+            --accent-primary: #000000;
+            --accent-primary-text: #FFFFFF;
+            
+            /* Card Icon Colors */
+            --icon-setup-bg: rgba(16, 185, 129, 0.1);
+            --icon-setup-color: #059669;
+            --icon-zip-bg: rgba(59, 130, 246, 0.1);
+            --icon-zip-color: #2563EB;
+            --icon-paint-bg: rgba(139, 92, 246, 0.1);
+            --icon-paint-color: #7C3AED;
+            
+            --success-bg: rgba(16, 185, 129, 0.04);
+            --success-border: rgba(16, 185, 129, 0.2);
+            --success-text: #065F46;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Ultra Minimal Dark Theme */
+                --bg-hero: #000000;
+                --bg-features: #0A0A0A;
+                --text-primary: #F9FAFB;
+                --text-secondary: #9CA3AF;
+                --border-color: #27272A;
+                --border-hover: #3F3F46;
+                
+                --accent-primary: #FFFFFF;
+                --accent-primary-text: #000000;
+                
+                /* Card Icon Colors */
+                --icon-setup-bg: rgba(52, 211, 153, 0.1);
+                --icon-setup-color: #34D399;
+                --icon-zip-bg: rgba(96, 165, 250, 0.1);
+                --icon-zip-color: #60A5FA;
+                --icon-paint-bg: rgba(167, 139, 250, 0.1);
+                --icon-paint-color: #A78BFA;
+
+                --success-bg: rgba(16, 185, 129, 0.05);
+                --success-border: rgba(52, 211, 153, 0.2);
+                --success-text: #34D399;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            color: var(--text-primary);
+            background-color: var(--bg-hero);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Split Screen Layout */
+        .layout-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Side: Hero */
+        .hero-section {
+            flex: 1;
+            background-color: var(--bg-hero);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 8%;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .hero-icon {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0 0 12px 0;
+            font-size: clamp(28px, 3.5vw, 42px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: clamp(15px, 1.2vw, 18px);
+            max-width: 400px;
+            margin: 0 0 32px 0;
+            line-height: 1.5;
+        }
+
+        .primary-btn {
+            background: var(--accent-primary);
+            color: var(--accent-primary-text);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: fit-content;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .primary-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Right Side: Features */
+        .features-section {
+            flex: 1.1;
+            background-color: var(--bg-features);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 8%;
+            gap: 16px;
+        }
+
+        /* Upgraded Premium Cards */
+        .feature-item {
+            background: var(--bg-hero);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            gap: 18px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .feature-item:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .feature-item.setup {
+            background: var(--success-bg);
+            border-color: var(--success-border);
+        }
+
+        .feature-item.setup:hover {
+            border-color: var(--success-text);
+        }
+
+        /* The New SVG Icon Containers */
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .icon-box.setup-icon {
+            background: var(--icon-setup-bg);
+            color: var(--icon-setup-color);
+        }
+
+        .icon-box.zip-icon {
+            background: var(--icon-zip-bg);
+            color: var(--icon-zip-color);
+        }
+
+        .icon-box.paint-icon {
+            background: var(--icon-paint-bg);
+            color: var(--icon-paint-color);
+        }
+
+        .content h3 {
+            margin: 0 0 6px 0;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-item.setup .content h3 {
+            color: var(--success-text);
+        }
+
+        .content p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Fixed the Badge styling */
+        .badge {
+            background: rgba(128, 128, 128, 0.1);
+            color: var(--text-primary);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid rgba(128, 128, 128, 0.2);
+        }
+
+        .feature-item.setup .badge {
+            background: var(--icon-setup-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+
+        @media (max-width: 960px) {
+            body { overflow-y: auto; }
+            .layout-wrapper { flex-direction: column; height: auto; }
+            .hero-section { border-right: none; border-bottom: 1px solid var(--border-color); padding: 10% 8%; }
+            .features-section { padding: 10% 8%; }
+            .primary-btn { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout-wrapper">
+        
+        <div class="hero-section">
+            <img src="icon128.png" alt="Extension Icon" class="hero-icon">
+            <h1>You're all set.</h1>
+            <p class="subtitle">Reddit Picture Gallery Downloader is now installed, active, and ready to use.</p>
+            <button class="primary-btn" id="closeWelcomeBtn">Got it, close tab</button>
+        </div>
+
+        <div class="features-section">
+            
+            <div class="feature-item setup">
+                <div class="icon-box setup-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+                <div class="content">
+                    <h3>Crucial browser setup</h3>
+                    <p>To prevent clicking "Save" for every single image, go to <span class="badge">chrome://settings/downloads</span> and turn <strong>OFF</strong> the toggle for <em>"Ask where to save each file before downloading"</em>.</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box zip-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 8v13H3V8"></path>
+                        <path d="M1 3h22v5H1z"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                </div>
+                <div class="content">
+                    <h3>Sharing via Discord or Email?</h3>
+                    <p>Click the extension's puzzle icon in your toolbar and change your download mode to <strong>ZIP</strong>. Bundle entire galleries into one single file to share them effortlessly and rock and roll. 🤘</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box paint-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+                        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+                        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+                    </svg>
+                </div>
+                <div class="content">
+                    <h3>Make it yours</h3>
+                    <p>In those same settings, you can automatically organize images into sub-folders or switch your button style to the sleek Premium Black theme.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
