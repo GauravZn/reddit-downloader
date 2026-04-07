@@ -50,7 +50,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                     // 3. Fallback just in case the title was literally just emojis or illegal characters
                     if (!title) title = "Reddit_Download";
-
+                    
                     const mode = settings.downloadMode;
 
                     // ROUTE 1: Folder

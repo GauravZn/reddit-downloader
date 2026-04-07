@@ -162,7 +162,7 @@ function manageFloatingButton() {
             rawTitle = `${months[now.getMonth()]}-${now.getDate()}-${now.getFullYear()}_${now.getHours()}-${now.getMinutes()}`;
         }
 
-        let cleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 80).trim();
+        let cleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 45).trim();
         let currentUrl = window.location.href.split('?')[0].split('#')[0].replace(/\/$/, "");
 
         chrome.runtime.sendMessage({
