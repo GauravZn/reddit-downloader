@@ -4,7 +4,8 @@ A lightweight, frictionless Chrome Extension that allows you to download high-re
 
 No sketchy third-party websites, no copied links, and no annoying pop-up ads. Everything happens locally on your machine.
 
-![Animation](https://github.com/user-attachments/assets/YOUR_GIF_LINK_HERE)
+![Animation2](https://github.com/user-attachments/assets/0091343c-1b81-4563-b6e1-474aec0a65db)
+
 
 ## ✨ What's New in Version 1.1
 * **📦 Smart .ZIP Bundling:** Instantly package massive 20-image galleries into a single, perfectly ordered `.zip` archive. 
