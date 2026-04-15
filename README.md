@@ -10,7 +10,6 @@ No sketchy third-party websites, no copied links, and no annoying pop-up ads. Ev
 ## ✨ What's New in Version 1.1
 * **📦 Smart .ZIP Bundling:** Instantly package massive 20-image galleries into a single, perfectly ordered `.zip` archive. 
 * **⇄ Inline Swap Toggle:** A sleek, cyan-on-black quick-toggle button sits right on the page. Seamlessly switch between "Individual Files" and "ZIP Archive" modes without opening any menus. The extension remembers your choice!
-* **📝 Text Post Extraction:** Right-click the extension icon to toggle "Include Post Text." If enabled, the extension will automatically generate a cleanly formatted `.txt` file containing the post's title and written body inside your folder or ZIP.
 
 ## ⚡ Core Features
 * **One-Click Gallery Downloads:** Instantly fetch and save every high-res image in a swipeable Reddit gallery.
