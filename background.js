@@ -59,7 +59,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             let fileNum = String(index + 1).padStart(2, '0');
                             chrome.downloads.download({
                                 url: imgUrl,
-                                filename: `${baseFolder}/${title}/${title}(${fileNum}).jpg`,
+                                filename: `${baseFolder}/${title}/${title} (${fileNum}).jpg`,
                                 saveAs: false
                             });
                         });
@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             let fileNum = String(index + 1).padStart(2, '0');
                             chrome.downloads.download({
                                 url: imgUrl,
-                                filename: `${baseFolder}/${title}(${fileNum}).jpg`,
+                                filename: `${baseFolder}/${title} (${fileNum}).jpg`,
                                 saveAs: false
                             });
                         });
@@ -85,7 +85,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             try {
                                 const imgResponse = await fetch(imgUrl);
                                 const blob = await imgResponse.blob();
-                                zip.file(`${title}(${fileNum}).jpg`, blob);
+                                zip.file(`${title} (${fileNum}).jpg`, blob);
                             } catch (error) {
                                 console.error("Failed to fetch image for zip:", error);
                             }
