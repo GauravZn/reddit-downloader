@@ -101,12 +101,102 @@ function getFailText(themeName) {
     return "❌ No Images";
 }
 
-// main button logic
+// --- CUSTOM TITLE PROMPT UI ---
+function promptForCustomTitle(defaultTitle, callback) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.75); z-index: 2147483647; 
+        display: flex; justify-content: center; align-items: center;
+        backdrop-filter: blur(4px); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    `;
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: #111111; border: 1px solid #333333; border-radius: 12px;
+        padding: 24px 32px; width: 440px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        display: flex; flex-direction: column; gap: 16px;
+    `;
+
+    const header = document.createElement('h3');
+    header.textContent = "Rename Gallery Title";
+    header.style.cssText = "margin: 0; color: #ffffff; font-size: 18px; font-weight: 600;";
+
+    const desc = document.createElement('p');
+    desc.textContent = "Hit enter to use this formatted default, or type a new name to override it.";
+    desc.style.cssText = "margin: 0; color: #9aa0a6; font-size: 13px; line-height: 1.4;";
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = defaultTitle;
+    input.style.cssText = `
+        background: #000000; border: 1px solid #444444; color: #8ab4f8;
+        padding: 12px 16px; border-radius: 8px; font-size: 15px; font-weight: 500;
+        outline: none; width: 100%; box-sizing: border-box; transition: border-color 0.2s;
+    `;
+    input.addEventListener('focus', () => input.style.borderColor = '#8ab4f8');
+    input.addEventListener('blur', () => input.style.borderColor = '#444444');
+
+    // FIX: BLOCKS REDDIT KEYBOARD SHORTCUTS FROM INTERFERING WITH TYPING
+    ['keydown', 'keyup', 'keypress'].forEach(evt => {
+        input.addEventListener(evt, (e) => {
+            e.stopPropagation();
+        });
+    });
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = "display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;";
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.style.cssText = `
+        background: transparent; color: #e8eaed; border: none; padding: 10px 16px;
+        border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;
+    `;
+    cancelBtn.addEventListener('mouseover', () => cancelBtn.style.background = 'rgba(255,255,255,0.1)');
+    cancelBtn.addEventListener('mouseout', () => cancelBtn.style.background = 'transparent');
+
+    const downloadBtn = document.createElement('button');
+    downloadBtn.textContent = "Save & Download";
+    downloadBtn.style.cssText = `
+        background: #1a73e8; color: #ffffff; border: none; padding: 10px 20px;
+        border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    `;
+    downloadBtn.addEventListener('mouseover', () => downloadBtn.style.background = '#174ea6');
+    downloadBtn.addEventListener('mouseout', () => downloadBtn.style.background = '#1a73e8');
+
+    btnRow.append(cancelBtn, downloadBtn);
+    modal.append(header, desc, input, btnRow);
+    overlay.append(modal);
+    document.body.append(overlay);
+
+    requestAnimationFrame(() => {
+        input.focus();
+        input.select();
+    });
+
+    const triggerDownload = () => {
+        const finalTitle = input.value.trim() || "Untitled_Gallery";
+        overlay.remove();
+        callback(finalTitle); 
+    };
+
+    const cancelDownload = () => overlay.remove(); 
+
+    downloadBtn.addEventListener('click', triggerDownload);
+    cancelBtn.addEventListener('click', cancelDownload);
+    
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') triggerDownload();
+        if (e.key === 'Escape') cancelDownload();
+    });
+}
+
+// --- MAIN BUTTON LOGIC ---
 function manageFloatingButton() {
     const isPostPage = window.location.pathname.includes('/comments/') || window.location.pathname.includes('/gallery/');
     let btn = document.getElementById('reddit-custom-dl-btn');
 
-    // Make sure it appears even if Reddit uses #lightbox in the URL
     if (!isPostPage && !window.location.href.includes('#lightbox')) {
         if (btn) btn.remove();
         return;
@@ -116,7 +206,6 @@ function manageFloatingButton() {
     btn = document.createElement("button");
     btn.id = "reddit-custom-dl-btn";
 
-    // grab the setting and build the initial button
     chrome.storage.sync.get({ buttonTheme: 'theme-native' }, (settings) => {
         btn.className = `reddit-gallery-dl-btn ${settings.buttonTheme}`;
         btn.innerHTML = getButtonContent(settings.buttonTheme);
@@ -126,11 +215,10 @@ function manageFloatingButton() {
 
     btn.addEventListener("click", (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Prevents clicking the button from closing the Reddit lightbox
+        e.stopPropagation(); 
 
         let originalText = btn.innerHTML;
         let currentTheme = Array.from(btn.classList).find(c => c.startsWith('theme-')) || 'theme-native';
-        btn.innerHTML = getLoadingText(currentTheme);
 
         let rawTitle = "";
         let currentPath = window.location.pathname;
@@ -162,27 +250,48 @@ function manageFloatingButton() {
             rawTitle = `${months[now.getMonth()]}-${now.getDate()}-${now.getFullYear()}_${now.getHours()}-${now.getMinutes()}`;
         }
 
-        let cleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 45).trim();
         let currentUrl = window.location.href.split('?')[0].split('#')[0].replace(/\/$/, "");
 
-        chrome.runtime.sendMessage({
-            action: "fetchAndDownload",
-            url: currentUrl,
-            title: cleanTitle
-        }, (response) => {
-            if (response && response.success) {
-                btn.innerHTML = getSuccessText(currentTheme, response.count);
+        const executeDownload = (finalTitle) => {
+            btn.innerHTML = getLoadingText(currentTheme); 
+            
+            chrome.runtime.sendMessage({
+                action: "fetchAndDownload",
+                url: currentUrl,
+                title: finalTitle
+            }, (response) => {
+                if (response && response.success) {
+                    btn.innerHTML = getSuccessText(currentTheme, response.count);
+                } else {
+                    btn.innerHTML = getFailText(currentTheme);
+                }
+                setTimeout(() => btn.innerHTML = originalText, 3000);
+            });
+        };
+
+        // Check user settings for the Prompt Toggle and Separator
+        chrome.storage.sync.get('globalPrefs', (data) => {
+            const prefs = data.globalPrefs || {};
+            const isPromptEnabled = prefs.promptCustomTitle || false;
+            
+            // Apply the user's custom Word Separator to the raw Reddit Title
+            let sepFormat = prefs.separatorFormat || 'underscore';
+            let sepChar = sepFormat === 'dash' ? '-' : sepFormat === 'space' ? ' ' : sepFormat === 'none' ? '' : '_';
+            let formattedCleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 45).trim().split(/\s+/).join(sepChar);
+            
+            if (isPromptEnabled) {
+                promptForCustomTitle(formattedCleanTitle, (newCustomTitle) => {
+                    executeDownload(newCustomTitle);
+                });
             } else {
-                btn.innerHTML = getFailText(currentTheme);
+                executeDownload(formattedCleanTitle);
             }
-            setTimeout(() => btn.innerHTML = originalText, 3000);
         });
     });
 }
 
 setInterval(manageFloatingButton, 500);
 
-// Watch for live changes from the popup
 chrome.storage.onChanged.addListener((changes, namespace) => {
     if (changes.buttonTheme) {
         const activeBtn = document.getElementById("reddit-custom-dl-btn");

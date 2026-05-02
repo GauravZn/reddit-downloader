@@ -53,3 +53,12 @@ function restoreOptions() {
 document.getElementById('downloadMode').addEventListener('change', updateDescription);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById('saveBtn').addEventListener('click', saveOptions);
+
+
+document.getElementById('customizeNamingBtn').addEventListener('click', () => {
+    if (chrome.runtime.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+    } else {
+        window.open(chrome.runtime.getURL('options.html'));
+    }
+});

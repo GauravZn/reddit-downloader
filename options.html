@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reddit Gallery Downloader - Configuration</title>
+    <link rel="stylesheet" href="options.css">
+    <script src="Sortable.min.js"></script>
+</head>
+<body>
+    <div id="toast" class="toast">Notification text goes here</div>
+
+    <div class="split-layout">
+        <!-- Left Side: Mock Post Context -->
+        <div class="left-panel">
+            <div class="mock-post-card">
+                <div class="mock-header">
+                    <div class="community-wrapper">
+                        <div class="com-icon-css">r/</div>
+                        <span class="mock-sub">r/NatureIsFuckingLit</span>
+                    </div>
+                    <div class="user-wrapper">
+                        <img src="user_dummy.jpg" alt="u/FeatherFanatic" class="user-pic">
+                        <span class="mock-author">Posted by u/FeatherFanatic</span>
+                    </div>
+                </div>
+                <div class="mock-title">The iridescent feathers on this peacock are unreal 🦚</div>
+                <div class="mock-image">
+                    <img src="peacock.jpg" alt="Majestic vertical peacock image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Builder Panel -->
+        <div class="right-panel">
+            <div class="header-row">
+                <div>
+                    <h1>Configure File Naming</h1>
+                    <p>Build custom naming conventions. Double-click custom pills in the toolbox to rename them.</p>
+                </div>
+                <div class="save-wrapper">
+                    <span id="status-msg"></span>
+                    <button id="save-configuration-btn" class="action-btn">Save Settings</button>
+                </div>
+            </div>
+
+            <!-- MOVED TO TOP: Download Behavior Settings -->
+            <div class="behavior-settings section">
+                <div class="toggle-group">
+                    <div class="toggle-text">
+                        <label class="toggle-title">Prompt for Custom Title before downloading</label>
+                        <span class="toggle-desc">Pops up a quick input box when you hit download. It pre-fills with your formatted defaults, but if you type something new, it completely overrides the name for that specific gallery.</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="prompt-title-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Mode Selector Tabs -->
+            <div class="tabs">
+                <button class="tab-link active" data-mode="folder">Folder Mode</button>
+                <button class="tab-link" data-mode="zip">ZIP Mode</button>
+                <button class="tab-link" data-mode="individual">Individual Mode</button>
+            </div>
+
+            <!-- HUMAN READABLE DESCRIPTION & LIVE PREVIEW -->
+            <div class="live-preview-section">
+                <div class="description-box">
+                    <strong>What this does:</strong> <span id="preview-description">Loading description...</span>
+                </div>
+                <div id="live-preview" class="preview-box">...</div>
+            </div>
+
+            <!-- Unified Variable Toolbox -->
+            <div class="section">
+                <h2>Shared Toolbox</h2>
+                <div id="toolbox" class="pill-container toolbox-container">
+                    <div class="pill" data-type="subreddit">[Subreddit]</div>
+                    <div class="pill" data-type="author">[Author]</div>
+                    <div class="pill" data-type="title">[Title]</div>
+                    <div class="pill" data-type="upload_date">[Upload Date]</div>
+                    <div class="pill" data-type="dl_date">[Download Date]</div>
+                    <div class="pill" data-type="time">[Time]</div>
+                    <div class="pill" data-type="index">[Index]</div>
+                    <div class="pill unique-id" data-type="unique_id">[Unique ID]</div>
+                    <div id="add-static-text-btn" class="pill custom-text-pill">[+ Add Static Text]</div>
+                </div>
+            </div>
+
+            <!-- Tab Panels per mode -->
+            <div class="panels-container">
+                <!-- FOLDER MODE -->
+                <div class="panel active" id="panel-folder">
+                    <div class="builder-group">
+                        <label>Folder Naming Formula: <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <div id="dropzone-folder-folder" class="pill-container drop-area"></div>
+                    </div>
+                    <div class="builder-group">
+                        <label>Image Filename Formula (Inside Folder): <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <div id="dropzone-folder-image" class="pill-container drop-area"></div>
+                    </div>
+                    <div class="fallback-logic">
+                        <div class="rule-group">
+                            <label>If path length exceeds limits:</label>
+                            <select id="truncate-rule-folder">
+                                <option value="auto">Automatically Truncate Name to Max Length</option>
+                                <option value="prompt">Ask User and Halt Download</option>
+                            </select>
+                        </div>
+                        <div class="rule-group">
+                            <label>If [Title] is missing:</label>
+                            <select id="missing-title-rule-folder">
+                                <option value="placeholder">Use Placeholder (e.g., 'Gallery_no_title')</option>
+                                <option value="omit">Omit title pill</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ZIP MODE -->
+                <div class="panel" id="panel-zip">
+                    <div class="builder-group">
+                        <label>ZIP Archive Naming Formula: <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <div id="dropzone-zip-archive" class="pill-container drop-area"></div>
+                    </div>
+                    <div class="builder-group">
+                        <label>Image Filename Formula (Inside ZIP): <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <div id="dropzone-zip-image" class="pill-container drop-area"></div>
+                    </div>
+                    <div class="fallback-logic">
+                        <div class="rule-group">
+                            <label>If path length exceeds limits:</label>
+                            <select id="truncate-rule-zip">
+                                <option value="auto">Automatically Truncate ZIP Name to Max Length</option>
+                            </select>
+                        </div>
+                        <div class="rule-group">
+                            <label>If [Title] is missing:</label>
+                            <select id="missing-title-rule-zip">
+                                <option value="placeholder">Use Placeholder for Archive Title</option>
+                                <option value="omit">Omit title pill</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INDIVIDUAL MODE -->
+                <div class="panel" id="panel-individual">
+                    <div class="builder-group">
+                        <label>Image Filename Naming Formula: <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <div id="dropzone-individual" class="pill-container drop-area"></div>
+                    </div>
+                    <div class="fallback-logic">
+                        <div class="rule-group">
+                            <label>If filename exceeds limits:</label>
+                            <select id="truncate-rule-individual">
+                                <option value="auto">Automatically Truncate Image Name to Max Length</option>
+                            </select>
+                        </div>
+                        <div class="rule-group">
+                            <label>If [Title] is missing:</label>
+                            <select id="missing-title-rule-individual">
+                                <option value="placeholder">Use Placeholder for Filename Title</option>
+                                <option value="omit">Omit title pill</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Formatting -->
+            <div class="format-settings">
+                <div class="setting-group">
+                    <label>Word Separator</label>
+                    <select id="separator-select">
+                        <option value="underscore">Underscore ( _ )</option>
+                        <option value="dash">Dash ( - )</option>
+                        <option value="space">Space (   )</option>
+                        <option value="none">None (Merged)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Date Format</label>
+                    <select id="date-format-select">
+                        <option value="iso">YYYY-MM-DD (Standard)</option>
+                        <option value="us">MM-DD-YYYY (US)</option>
+                        <option value="uk">DD-MM-YYYY (UK/Euro)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Time Format</label>
+                    <select id="time-format-select">
+                        <option value="24h">24-Hour (14:30:00)</option>
+                        <option value="12h">12-Hour (02:30 PM)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>ID Format</label>
+                    <select id="id-format-select">
+                        <option value="hex">Hexcode (e.g., a1b2c3)</option>
+                        <option value="numeric">Numeric (e.g., 987654)</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>
