@@ -16,8 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabLinks = document.querySelectorAll('.tab-link');
     const panels = document.querySelectorAll('.panel');
 
-    const separatorSelect = document.getElementById('separator-select'); 
+    const folderSeparatorSelect = document.getElementById('folder-separator-select');
+    const fileSeparatorSelect = document.getElementById('file-separator-select');
+    const indexFormatSelect = document.getElementById('index-format-select');
     const dateFormatSelect = document.getElementById('date-format-select');
+    const dateSeparatorSelect = document.getElementById('date-separator-select'); // NEW
     const timeFormatSelect = document.getElementById('time-format-select');
     const idFormatSelect = document.getElementById('id-format-select');
     const promptTitleToggle = document.getElementById('prompt-title-toggle');
@@ -30,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let uniqueStaticTextId = 0;
     let toastTimeout;
+    let currentBaseFolder = 'reddit_downloads';
 
-    // Generates a static Base 36 hash (lowercase + digits) for the preview when empty.
     const emptyFallbackHash = Math.random().toString(36).substring(2, 10);
 
     function showToast(message) {
@@ -53,22 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
     makeSortable(dropzones.zip.image);
     makeSortable(dropzones.individual);
 
-    // --- REBUILT STATIC TEXT LOGIC ---
     addStaticTextBtn.addEventListener('click', () => {
-        addStaticTextBtn.style.display = 'none'; 
+        addStaticTextBtn.style.display = 'none';
 
         const inputWrapper = document.createElement('div');
         inputWrapper.className = 'pill user-typed-text';
-        
+
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'pill-input';
         input.placeholder = 'Type...';
         input.style.width = '8ch';
-        
+
         inputWrapper.appendChild(input);
         toolbox.insertBefore(inputWrapper, addStaticTextBtn);
-        
+
         input.focus();
 
         const updateWidth = () => { input.style.width = Math.max(input.value.length + 1, 8) + 'ch'; };
@@ -79,24 +81,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (saved) return;
             saved = true;
 
-            let rawText = input.value.trim();
-            if (!rawText) {
-                inputWrapper.remove(); 
+            let rawText = input.value;
+            if (rawText === "") {
+                inputWrapper.remove();
                 addStaticTextBtn.style.display = 'block';
                 return;
             }
-            
+
             let sanitizedText = rawText.replace(/[<>:"/\\|?*]/g, '-');
             if (rawText !== sanitizedText) showToast("Special characters were replaced with '-'");
-            
+
             inputWrapper.innerHTML = '';
-            inputWrapper.textContent = `[${sanitizedText}]`;
+            inputWrapper.innerHTML = `<span style="white-space: pre;">${sanitizedText.replace(/ /g, '&nbsp;')}</span>`;
             inputWrapper.setAttribute('data-type', 'user_text');
             inputWrapper.setAttribute('data-generated-text', sanitizedText);
             inputWrapper.setAttribute('data-static-text-id', `static-text-${uniqueStaticTextId++}`);
-            
+
             makePillDeletable(inputWrapper);
-            
+
             addStaticTextBtn.style.display = 'block';
             updatePreview();
         };
@@ -136,7 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    [separatorSelect, dateFormatSelect, timeFormatSelect, idFormatSelect].forEach(select => {
+    // Added Date Separator to the live update triggers
+    [folderSeparatorSelect, fileSeparatorSelect, indexFormatSelect, dateFormatSelect, dateSeparatorSelect, timeFormatSelect, idFormatSelect].forEach(select => {
         select.addEventListener('change', updatePreview);
     });
 
@@ -149,39 +152,64 @@ document.addEventListener('DOMContentLoaded', () => {
         if (val === 'dash') return '-';
         if (val === 'space') return ' ';
         if (val === 'none') return '';
-        return '_'; 
+        return '_';
     };
 
-    const getDataValues = (separator, dateFormat, timeFormat, idFormat) => {
+    const getDateSeparatorChar = (val) => {
+        if (val === 'underscore') return '_';
+        if (val === 'space') return ' ';
+        if (val === 'dot') return '.';
+        if (val === 'none') return '';
+        return '-';
+    };
+
+    const getDataValues = (separator, indexFormat, dateFormat, dateSeparator, timeFormat, idFormat) => {
         const sepChar = getSeparatorChar(separator);
+        const dateSepChar = getDateSeparatorChar(dateSeparator);
         const rawTitle = "The iridescent feathers on this peacock are unreal";
-        
+
+        let indexString = '01';
+        if (indexFormat === 'parentheses') indexString = '(01)';
+        if (indexFormat === 'brackets') indexString = '[01]';
+
+        // Dynamically build the new requested date formats for the preview!
+        let formattedDate = '';
+        if (dateFormat === 'dd-mm-yyyy' || dateFormat === 'uk') formattedDate = `03${dateSepChar}05${dateSepChar}2026`;
+        else if (dateFormat === 'dd-mm-yy') formattedDate = `03${dateSepChar}05${dateSepChar}26`;
+        else if (dateFormat === 'mm-dd-yyyy' || dateFormat === 'us') formattedDate = `05${dateSepChar}03${dateSepChar}2026`;
+        else if (dateFormat === 'mm-dd-yy') formattedDate = `05${dateSepChar}03${dateSepChar}26`;
+        else formattedDate = `2026${dateSepChar}05${dateSepChar}03`;
+
         return {
             subreddit: 'NatureIsFuckingLit',
             author: 'FeatherFanatic',
             title: rawTitle.split(' ').join(sepChar),
-            index: '01',
+            index: indexString,
             unique_id: idFormat === 'hex' ? 'a1b2c3' : '987654',
-            date: (dateFormat === 'iso') ? `2026${sepChar}05${sepChar}02` : (dateFormat === 'us') ? `05${sepChar}02${sepChar}2026` : `02${sepChar}05${sepChar}2026`,
+            date: formattedDate,
             time: (timeFormat === '24h') ? `14${sepChar}30${sepChar}00` : `02${sepChar}30${sepChar}PM`
         };
     };
 
-    const getFormulaString = (dropzone, data) => {
+    const getFormulaString = (dropzone, data, sepChar) => {
         const pills = dropzone.querySelectorAll('.pill');
-        
-        // Base 36 hash fallback
-        if (pills.length === 0) return emptyFallbackHash; 
-        
+        if (pills.length === 0) return emptyFallbackHash;
+
         let formulaString = '';
+        let prevWasUserText = false;
+
         pills.forEach((pill, index) => {
             const type = pill.getAttribute('data-type');
-            const sepChar = getSeparatorChar(separatorSelect.value);
-            
-            if (index > 0 && type !== 'user_text') formulaString += sepChar;
+            const isUserText = (type === 'user_text');
 
-            if (type === 'user_text') {
-                formulaString += pill.getAttribute('data-generated-text') || ''; 
+            if (index > 0) {
+                if (!isUserText && !prevWasUserText) {
+                    formulaString += sepChar;
+                }
+            }
+
+            if (isUserText) {
+                formulaString += pill.getAttribute('data-generated-text') || '';
             } else if (type === 'unique_id') {
                 formulaString += data.unique_id;
             } else if (type === 'upload_date' || type === 'dl_date') {
@@ -191,52 +219,64 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 formulaString += data[type] || '';
             }
+
+            prevWasUserText = isUserText;
         });
         return formulaString;
     };
 
     function updatePreview() {
         const activeMode = getActiveMode();
-        const data = getDataValues(separatorSelect.value, dateFormatSelect.value, timeFormatSelect.value, idFormatSelect.value);
-        
+
+        const folderSepGroup = folderSeparatorSelect.closest('.setting-group');
+        if (activeMode === 'individual') folderSepGroup.style.display = 'none';
+        else folderSepGroup.style.display = 'block';
+
+        const folderSep = getSeparatorChar(folderSeparatorSelect.value);
+        const fileSep = getSeparatorChar(fileSeparatorSelect.value);
+
+        const folderData = getDataValues(folderSeparatorSelect.value, indexFormatSelect.value, dateFormatSelect.value, dateSeparatorSelect.value, timeFormatSelect.value, idFormatSelect.value);
+        const fileData = getDataValues(fileSeparatorSelect.value, indexFormatSelect.value, dateFormatSelect.value, dateSeparatorSelect.value, timeFormatSelect.value, idFormatSelect.value);
+
         if (activeMode === 'folder') {
-            const folderFormula = getFormulaString(dropzones.folder.folder, data);
-            const imageFormula = getFormulaString(dropzones.folder.image, data);
-            
+            const folderFormula = getFormulaString(dropzones.folder.folder, folderData, folderSep);
+            const imageFormula = getFormulaString(dropzones.folder.image, fileData, fileSep);
+
             previewDescription.innerHTML = `Creates a sub-folder named <strong>"${folderFormula}"</strong> and saves the images inside it as <strong>"${imageFormula}.jpg"</strong>.`;
-            livePreview.textContent = `downloads/Reddit Downloads/${folderFormula}/${imageFormula}.jpg`;
-            
+            livePreview.textContent = `downloads/${currentBaseFolder}/${folderFormula}/${imageFormula}.jpg`;
+
         } else if (activeMode === 'zip') {
-            const archiveFormula = getFormulaString(dropzones.zip.archive, data);
-            const imageFormula = getFormulaString(dropzones.zip.image, data);
-            
+            const archiveFormula = getFormulaString(dropzones.zip.archive, folderData, folderSep);
+            const imageFormula = getFormulaString(dropzones.zip.image, fileData, fileSep);
+
             previewDescription.innerHTML = `Bundles everything into a single ZIP archive named <strong>"${archiveFormula}.zip"</strong>. Inside the ZIP, this image will be named <strong>"${imageFormula}.jpg"</strong>.`;
-            livePreview.textContent = `downloads/Reddit Downloads/${archiveFormula}.zip -> (${imageFormula}.jpg)`;
-            
+            livePreview.textContent = `downloads/${currentBaseFolder}/${archiveFormula}.zip -> (${imageFormula}.jpg)`;
+
         } else if (activeMode === 'individual') {
-            const imageFormula = getFormulaString(dropzones.individual, data);
-            
+            const imageFormula = getFormulaString(dropzones.individual, fileData, fileSep);
+
             previewDescription.innerHTML = `Saves the image directly into your base download folder as <strong>"${imageFormula}.jpg"</strong>.`;
-            livePreview.textContent = `downloads/Reddit Downloads/${imageFormula}.jpg`;
+            livePreview.textContent = `downloads/${currentBaseFolder}/${imageFormula}.jpg`;
         }
     }
 
     const pillToState = (pill) => {
         const type = pill.getAttribute('data-type');
-        if (type === 'user_text') {
-            return { type: 'user_text', staticTextId: pill.getAttribute('data-static-text-id'), generatedText: pill.getAttribute('data-generated-text') };
-        } else {
-            return { type }; 
-        }
+        if (type === 'user_text') return { type: 'user_text', staticTextId: pill.getAttribute('data-static-text-id'), generatedText: pill.getAttribute('data-generated-text') };
+        else return { type };
     };
 
     saveBtn.addEventListener('click', () => {
         const globalPrefs = {
-            separatorFormat: separatorSelect.value,
+            folderSeparatorFormat: folderSeparatorSelect.value,
+            fileSeparatorFormat: fileSeparatorSelect.value,
+            indexFormat: indexFormatSelect.value,
             dateFormat: dateFormatSelect.value,
+            dateSeparatorFormat: dateSeparatorSelect.value, // NEW
             timeFormat: timeFormatSelect.value,
             idFormat: idFormatSelect.value,
-            promptCustomTitle: promptTitleToggle.checked 
+            promptCustomTitle: promptTitleToggle.checked,
+            activeMode: getActiveMode()
         };
 
         const saveZoneState = (dropzone) => Array.from(dropzone.querySelectorAll('.pill')).map(pillToState);
@@ -249,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const toolboxPills = Array.from(toolbox.querySelectorAll('.pill[data-type="user_text"]')).map(pillToState);
 
-        chrome.storage.sync.set({ 
+        chrome.storage.sync.set({
             globalPrefs, modeState, toolboxStaticTextDefs: toolboxPills, lastUniqueStaticTextId: uniqueStaticTextId
         }, () => {
             statusMsg.textContent = 'Settings Saved';
@@ -261,58 +301,73 @@ document.addEventListener('DOMContentLoaded', () => {
         const pill = document.createElement('div');
         pill.className = 'pill';
         pill.setAttribute('data-type', pillState.type);
-        
+
         if (pillState.type === 'user_text') {
             pill.className += ' user-typed-text';
             pill.setAttribute('data-generated-text', pillState.generatedText);
             pill.setAttribute('data-static-text-id', pillState.staticTextId);
-            pill.textContent = `[${pillState.generatedText || 'Custom'}]`;
+
+            let displayString = pillState.generatedText || 'Custom';
+            pill.innerHTML = `<span style="white-space: pre;">${displayString.replace(/ /g, '&nbsp;')}</span>`;
         } else if (pillState.type === 'unique_id') {
             pill.className += ' unique-id';
-            pill.textContent = '[Unique ID]';
+            pill.textContent = 'Unique ID';
         } else {
             let formattedText = pillState.type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            pill.textContent = `[${formattedText}]`;
+            pill.textContent = formattedText;
         }
         return pill;
     }
 
     const defaultState = {
-        globalPrefs: { separatorFormat: 'underscore', dateFormat: 'iso', timeFormat: '24h', idFormat: 'hex', promptCustomTitle: false },
+        globalPrefs: { folderSeparatorFormat: 'space', fileSeparatorFormat: 'space', indexFormat: 'standard', dateFormat: 'yyyy-mm-dd', dateSeparatorFormat: 'dash', timeFormat: '24h', idFormat: 'hex', promptCustomTitle: false, activeMode: 'folder' },
         toolboxStaticTextDefs: [], lastUniqueStaticTextId: 0,
         modeState: {
-            folder: { folder: [{type: 'subreddit'}], image: [{type: 'title'}, {type: 'index'}], fallbacks: {truncate: 'auto', missingTitle: 'placeholder'} },
-            zip: { archive: [{type: 'title'}], image: [{type: 'index'}], fallbacks: {truncate: 'auto', missingTitle: 'placeholder'} },
-            individual: { formula: [{type: 'title'}, {type: 'unique_id'}], fallbacks: {truncate: 'auto', missingTitle: 'placeholder'} }
+            folder: { folder: [{ type: 'subreddit' }], image: [{ type: 'title' }, { type: 'index' }], fallbacks: { truncate: 'auto', missingTitle: 'placeholder' } },
+            zip: { archive: [{ type: 'title' }], image: [{ type: 'index' }], fallbacks: { truncate: 'auto', missingTitle: 'placeholder' } },
+            // FIX: Replaced 'unique_id' with 'index' as the default pill here!
+            individual: { formula: [{ type: 'title' }, { type: 'index' }], fallbacks: { truncate: 'auto', missingTitle: 'placeholder' } }
         }
     };
 
     chrome.storage.sync.get(null, (allData) => {
         let data = allData;
-        
+
         if (!data || Object.keys(data).length === 0 || !data.globalPrefs || !data.modeState || !data.modeState.folder) {
             data = defaultState;
             chrome.storage.sync.clear();
             chrome.storage.sync.set(defaultState);
         }
 
-        separatorSelect.value = data.globalPrefs.separatorFormat || 'underscore';
-        dateFormatSelect.value = data.globalPrefs.dateFormat;
-        timeFormatSelect.value = data.globalPrefs.timeFormat;
-        idFormatSelect.value = data.globalPrefs.idFormat;
-        promptTitleToggle.checked = data.globalPrefs.promptCustomTitle || false; 
+        currentBaseFolder = data.preferredFolder || 'reddit_downloads';
+
+        folderSeparatorSelect.value = data.globalPrefs.folderSeparatorFormat || data.globalPrefs.separatorFormat || 'space';
+        fileSeparatorSelect.value = data.globalPrefs.fileSeparatorFormat || data.globalPrefs.separatorFormat || 'space';
+        indexFormatSelect.value = data.globalPrefs.indexFormat || 'standard';
+
+        dateFormatSelect.value = data.globalPrefs.dateFormat || 'yyyy-mm-dd';
+        dateSeparatorSelect.value = data.globalPrefs.dateSeparatorFormat || 'dash'; // NEW
+        timeFormatSelect.value = data.globalPrefs.timeFormat || '24h';
+        idFormatSelect.value = data.globalPrefs.idFormat || 'hex';
+        promptTitleToggle.checked = data.globalPrefs.promptCustomTitle || false;
         uniqueStaticTextId = data.lastUniqueStaticTextId || 0;
+
+        const restoredMode = data.globalPrefs.activeMode || 'folder';
+        tabLinks.forEach(l => l.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        document.querySelector(`.tab-link[data-mode="${restoredMode}"]`).classList.add('active');
+        document.getElementById(`panel-${restoredMode}`).classList.add('active');
 
         if (data.toolboxStaticTextDefs) {
             data.toolboxStaticTextDefs.forEach(pillState => {
                 const pill = stateToPill(pillState);
-                makePillDeletable(pill); 
+                makePillDeletable(pill);
                 toolbox.insertBefore(pill, addStaticTextBtn);
             });
         }
 
         const loadZoneState = (zoneEl, pillStates) => {
-            zoneEl.innerHTML = ''; 
+            zoneEl.innerHTML = '';
             pillStates.forEach(pillState => {
                 const pill = stateToPill(pillState);
                 zoneEl.appendChild(pill);

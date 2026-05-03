@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Reddit Gallery Downloader - Configuration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="options.css">
     <script src="Sortable.min.js"></script>
 </head>
@@ -76,15 +79,15 @@
             <div class="section">
                 <h2>Shared Toolbox</h2>
                 <div id="toolbox" class="pill-container toolbox-container">
-                    <div class="pill" data-type="subreddit">[Subreddit]</div>
-                    <div class="pill" data-type="author">[Author]</div>
-                    <div class="pill" data-type="title">[Title]</div>
-                    <div class="pill" data-type="upload_date">[Upload Date]</div>
-                    <div class="pill" data-type="dl_date">[Download Date]</div>
-                    <div class="pill" data-type="time">[Time]</div>
-                    <div class="pill" data-type="index">[Index]</div>
-                    <div class="pill unique-id" data-type="unique_id">[Unique ID]</div>
-                    <div id="add-static-text-btn" class="pill custom-text-pill">[+ Add Static Text]</div>
+                    <div class="pill" data-type="subreddit">Subreddit</div>
+                    <div class="pill" data-type="author">Author</div>
+                    <div class="pill" data-type="title">Title</div>
+                    <div class="pill" data-type="upload_date">Upload Date</div>
+                    <div class="pill" data-type="dl_date">Download Date</div>
+                    <div class="pill" data-type="time">Time</div>
+                    <div class="pill" data-type="index">Index</div>
+                    <div class="pill unique-id" data-type="unique_id">Unique ID</div>
+                    <div id="add-static-text-btn" class="pill custom-text-pill">+ Add Static Text</div>
                 </div>
             </div>
 
@@ -133,6 +136,7 @@
                             <label>If path length exceeds limits:</label>
                             <select id="truncate-rule-zip">
                                 <option value="auto">Automatically Truncate ZIP Name to Max Length</option>
+                                <option value="prompt">Ask User and Halt Download</option>
                             </select>
                         </div>
                         <div class="rule-group">
@@ -156,6 +160,7 @@
                             <label>If filename exceeds limits:</label>
                             <select id="truncate-rule-individual">
                                 <option value="auto">Automatically Truncate Image Name to Max Length</option>
+                                <option value="prompt">Ask User and Halt Download</option>
                             </select>
                         </div>
                         <div class="rule-group">
@@ -172,20 +177,49 @@
             <!-- Global Formatting -->
             <div class="format-settings">
                 <div class="setting-group">
-                    <label>Word Separator</label>
-                    <select id="separator-select">
+                    <label>Folder Separator</label>
+                    <select id="folder-separator-select">
+                        <option value="space">Space (   )</option>
                         <option value="underscore">Underscore ( _ )</option>
                         <option value="dash">Dash ( - )</option>
-                        <option value="space">Space (   )</option>
                         <option value="none">None (Merged)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>File Separator</label>
+                    <select id="file-separator-select">
+                        <option value="space">Space (   )</option>
+                        <option value="underscore">Underscore ( _ )</option>
+                        <option value="dash">Dash ( - )</option>
+                        <option value="none">None (Merged)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Index Format</label>
+                    <select id="index-format-select">
+                        <option value="standard">01 (Standard)</option>
+                        <option value="parentheses">(01) (Parentheses)</option>
+                        <option value="brackets">[01] (Brackets)</option>
                     </select>
                 </div>
                 <div class="setting-group">
                     <label>Date Format</label>
                     <select id="date-format-select">
-                        <option value="iso">YYYY-MM-DD (Standard)</option>
-                        <option value="us">MM-DD-YYYY (US)</option>
-                        <option value="uk">DD-MM-YYYY (UK/Euro)</option>
+                        <option value="yyyy-mm-dd">YYYY MM DD</option>
+                        <option value="dd-mm-yyyy">DD MM YYYY</option>
+                        <option value="dd-mm-yy">DD MM YY</option>
+                        <option value="mm-dd-yyyy">MM DD YYYY</option>
+                        <option value="mm-dd-yy">MM DD YY</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Date Separator</label>
+                    <select id="date-separator-select">
+                        <option value="dash">Dash ( - )</option>
+                        <option value="underscore">Underscore ( _ )</option>
+                        <option value="dot">Dot ( . )</option>
+                        <option value="space">Space (   )</option>
+                        <option value="none">None (Merged)</option>
                     </select>
                 </div>
                 <div class="setting-group">

@@ -53,101 +53,19 @@ function getFailText(themeName) {
     return "❌ No Images";
 }
 
-// --- CUSTOM TITLE PROMPT UI ---
-function promptForCustomTitle(defaultTitle, sepChar, callback) {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.75); z-index: 2147483647; 
-        display: flex; justify-content: center; align-items: center;
-        backdrop-filter: blur(4px); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    `;
-
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        background: #111111; border: 1px solid #333333; border-radius: 12px;
-        padding: 24px 32px; width: 440px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-        display: flex; flex-direction: column; gap: 16px;
-    `;
-
-    const header = document.createElement('h3');
-    header.textContent = "Rename Gallery Title";
-    header.style.cssText = "margin: 0; color: #ffffff; font-size: 18px; font-weight: 600;";
-
-    const desc = document.createElement('p');
-    desc.textContent = "Type a new name to override. Your word separators will be applied automatically.";
-    desc.style.cssText = "margin: 0; color: #9aa0a6; font-size: 13px; line-height: 1.4;";
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = defaultTitle;
-    input.style.cssText = `
-        background: #000000; border: 1px solid #444444; color: #8ab4f8;
-        padding: 12px 16px; border-radius: 8px; font-size: 15px; font-weight: 500;
-        outline: none; width: 100%; box-sizing: border-box; transition: border-color 0.2s;
-    `;
-    input.addEventListener('focus', () => input.style.borderColor = '#8ab4f8');
-    input.addEventListener('blur', () => input.style.borderColor = '#444444');
-
-    // FIX: SHIELD AGAINST REDDIT KEYBOARD HIJACKING
-    ['keydown', 'keyup', 'keypress'].forEach(evt => {
-        input.addEventListener(evt, (e) => {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        }, true);
-    });
-
-    const btnRow = document.createElement('div');
-    btnRow.style.cssText = "display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;";
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = "Cancel";
-    cancelBtn.style.cssText = `
-        background: transparent; color: #e8eaed; border: none; padding: 10px 16px;
-        border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;
-    `;
-    cancelBtn.addEventListener('mouseover', () => cancelBtn.style.background = 'rgba(255,255,255,0.1)');
-    cancelBtn.addEventListener('mouseout', () => cancelBtn.style.background = 'transparent');
-
-    const downloadBtn = document.createElement('button');
-    downloadBtn.textContent = "Save & Download";
-    downloadBtn.style.cssText = `
-        background: #1a73e8; color: #ffffff; border: none; padding: 10px 20px;
-        border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
-    `;
-    downloadBtn.addEventListener('mouseover', () => downloadBtn.style.background = '#174ea6');
-    downloadBtn.addEventListener('mouseout', () => downloadBtn.style.background = '#1a73e8');
-
-    btnRow.append(cancelBtn, downloadBtn);
-    modal.append(header, desc, input, btnRow);
-    overlay.append(modal);
-    document.body.append(overlay);
-
-    requestAnimationFrame(() => {
-        input.focus();
-        input.select();
-    });
-
-    const triggerDownload = () => {
-        let typedTitle = input.value.trim() || "Untitled_Gallery";
-        let finalFormattedTitle = typedTitle.replace(/[\\/:*?"<>|]/g, "").split(/\s+/).join(sepChar);
-        
-        overlay.remove();
-        callback(finalFormattedTitle); 
-    };
-
-    const cancelDownload = () => overlay.remove(); 
-
-    downloadBtn.addEventListener('click', triggerDownload);
-    cancelBtn.addEventListener('click', cancelDownload);
+function promptForCustomTitle(defaultTitle, callback) {
+    const userInput = window.prompt(
+        "Enter a custom title for this gallery:\n(Your active Folder and File separators will automatically be applied to any spaces you type)", 
+        defaultTitle
+    );
     
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') triggerDownload();
-        if (e.key === 'Escape') cancelDownload();
-    }, false);
+    if (userInput !== null) {
+        let typedTitle = userInput.trim() || "Untitled_Gallery";
+        let finalFormattedTitle = typedTitle.replace(/[\\/:*?"<>|]/g, ""); 
+        callback(finalFormattedTitle);
+    }
 }
 
-// --- MAIN BUTTON LOGIC ---
 function manageFloatingButton() {
     const isPostPage = window.location.pathname.includes('/comments/') || window.location.pathname.includes('/gallery/');
     let btn = document.getElementById('reddit-custom-dl-btn');
@@ -224,20 +142,39 @@ function manageFloatingButton() {
             });
         };
 
-        chrome.storage.sync.get('globalPrefs', (data) => {
+        // FIX: The Length Evaluation Engine
+        chrome.storage.sync.get(['globalPrefs', 'modeState'], (data) => {
             const prefs = data.globalPrefs || {};
+            const modeState = data.modeState || {};
+            const activeMode = prefs.activeMode || 'folder';
+            
             const isPromptEnabled = prefs.promptCustomTitle || false;
             
-            let sepFormat = prefs.separatorFormat || 'underscore';
-            let sepChar = sepFormat === 'dash' ? '-' : sepFormat === 'space' ? ' ' : sepFormat === 'none' ? '' : '_';
+            // Look up the specific truncate rule for their active mode
+            const truncateRule = modeState[activeMode]?.fallbacks?.truncate || 'auto';
             
-            let formattedCleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").substring(0, 45).trim().split(/\s+/).join(sepChar);
+            // Clean the title so we know its true length
+            let formattedCleanTitle = rawTitle.replace(/[\\/:*?"<>|]/g, "").trim();
             
+            // The maximum safe length for the title portion before Windows paths break
+            const MAX_SAFE_LENGTH = 80;
+            const isTooLong = formattedCleanTitle.length > MAX_SAFE_LENGTH;
+
             if (isPromptEnabled) {
-                promptForCustomTitle(formattedCleanTitle, sepChar, (newCustomTitle) => {
+                // If they explicitly turned on "always prompt", trim it for the prompt box
+                promptForCustomTitle(formattedCleanTitle.substring(0, MAX_SAFE_LENGTH), (newCustomTitle) => {
+                    executeDownload(newCustomTitle);
+                });
+            } else if (isTooLong && truncateRule === 'prompt') {
+                // FIX: They didn't have always prompt on, but the file was too long and they asked to be prompted!
+                promptForCustomTitle(formattedCleanTitle.substring(0, MAX_SAFE_LENGTH), (newCustomTitle) => {
                     executeDownload(newCustomTitle);
                 });
             } else {
+                // Normal download, or they have 'auto' trim selected
+                if (isTooLong && truncateRule === 'auto') {
+                    formattedCleanTitle = formattedCleanTitle.substring(0, MAX_SAFE_LENGTH).trim();
+                }
                 executeDownload(formattedCleanTitle);
             }
         });
