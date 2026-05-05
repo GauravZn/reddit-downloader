@@ -10,7 +10,26 @@
     <script src="Sortable.min.js"></script>
 </head>
 <body>
-    <div id="toast" class="toast">Notification text goes here</div>
+    <!-- Confirmation modal (used for reset, etc.) -->
+    <div id="confirm-overlay" class="confirm-overlay">
+        <div class="confirm-dialog">
+            <h3 id="confirm-title">Are you sure?</h3>
+            <p id="confirm-message">This action cannot be undone.</p>
+            <div class="confirm-actions">
+                <button id="confirm-cancel" class="confirm-cancel" type="button">Cancel</button>
+                <button id="confirm-ok" class="confirm-danger" type="button">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        <span class="toast-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </span>
+        <span class="toast-text">Notification text goes here</span>
+    </div>
 
     <div class="split-layout">
         <!-- Left Side: Mock Post Context -->
@@ -19,7 +38,7 @@
                 <div class="mock-header">
                     <div class="community-wrapper">
                         <div class="com-icon-css">r/</div>
-                        <span class="mock-sub">r/NatureIsFuckingLit</span>
+                        <span class="mock-sub">r/BeAmazed</span>
                     </div>
                     <div class="user-wrapper">
                         <img src="user_dummy.jpg" alt="u/FeatherFanatic" class="user-pic">
@@ -38,11 +57,17 @@
             <div class="header-row">
                 <div>
                     <h1>Configure File Naming</h1>
-                    <p>Build custom naming conventions. Double-click custom pills in the toolbox to delete them.</p>
+                    <p>Build custom naming conventions. Drag elements into the formula. Double-click any pill to remove it.</p>
                 </div>
                 <div class="save-wrapper">
                     <span id="status-msg"></span>
-                    <button id="save-configuration-btn" class="action-btn">Save Settings</button>
+                    <button id="save-configuration-btn" class="action-btn" type="button">
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span class="label-default">Save Settings</span>
+                        <span class="label-saved">Saved</span>
+                    </button>
                 </div>
             </div>
 
@@ -58,6 +83,26 @@
                         <span class="slider round"></span>
                     </label>
                 </div>
+                <div class="toggle-group" style="margin-top: 16px;">
+                    <div class="toggle-text">
+                        <label class="toggle-title">Use enhanced prompt box (recommended)</label>
+                        <span class="toggle-desc">Shows a custom prompt right above the Download button instead of the native browser dialog at the top of the screen. Reddit's keyboard shortcuts are blocked while you type.</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="custom-modal-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-group" style="margin-top: 16px;">
+                    <div class="toggle-text">
+                        <label class="toggle-title">Enable Alt + D keyboard shortcut</label>
+                        <span class="toggle-desc">Press <strong>Alt + D</strong> on a Reddit gallery page to trigger the download without clicking. The shortcut is ignored while you're typing in any input or text field. If your browser intercepts Alt + D for the address bar, turn this off.</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="keyboard-shortcut-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
 
             <!-- Mode Selector Tabs -->
@@ -67,17 +112,10 @@
                 <button class="tab-link" data-mode="individual">Individual Mode</button>
             </div>
 
-            <!-- HUMAN READABLE DESCRIPTION & LIVE PREVIEW -->
-            <div class="live-preview-section">
-                <div class="description-box">
-                    <strong>What this does:</strong> <span id="preview-description">Loading description...</span>
-                </div>
-                <div id="live-preview" class="preview-box">...</div>
-            </div>
-
             <!-- Unified Variable Toolbox -->
             <div class="section">
-                <h2>Shared Toolbox</h2>
+                <h2>Filename Elements</h2>
+                <p class="section-helper">Drag any element into the formula below. Static text stays put, everything else gets replaced with the real value at download time.</p>
                 <div id="toolbox" class="pill-container toolbox-container">
                     <div class="pill" data-type="subreddit">Subreddit</div>
                     <div class="pill" data-type="author">Author</div>
@@ -96,26 +134,43 @@
                 <!-- FOLDER MODE -->
                 <div class="panel active" id="panel-folder">
                     <div class="builder-group">
-                        <label>Folder Naming Formula: <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <label>Folder Naming Formula <span class="helper-text">(Double-click a pill to remove it)</span></label>
                         <div id="dropzone-folder-folder" class="pill-container drop-area"></div>
                     </div>
                     <div class="builder-group">
-                        <label>Image Filename Formula (Inside Folder): <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <label>Image Filename Formula (Inside Folder) <span class="helper-text">(Double-click a pill to remove it)</span></label>
                         <div id="dropzone-folder-image" class="pill-container drop-area"></div>
                     </div>
+
+                    <!-- LIVE PREVIEW (moved directly under formula) -->
+                    <div class="live-preview-section">
+                        <div class="description-box">
+                            <strong>What this does:</strong> <span class="preview-description"></span>
+                        </div>
+                        <div class="preview-box">...</div>
+                    </div>
+
                     <div class="fallback-logic">
                         <div class="rule-group">
-                            <label>If path length exceeds limits:</label>
+                            <label>If path length exceeds limits</label>
                             <select id="truncate-rule-folder">
                                 <option value="auto">Automatically Truncate Name to Max Length</option>
                                 <option value="prompt">Ask User and Halt Download</option>
                             </select>
                         </div>
                         <div class="rule-group">
-                            <label>If [Title] is missing:</label>
+                            <label>If Title is missing<span class="info-icon" data-tooltip="Posts without a real title (or that look like default Reddit boilerplate) trigger this rule. Choose a placeholder string or omit the Title pill entirely from the name.">?</span></label>
                             <select id="missing-title-rule-folder">
-                                <option value="placeholder">Use Placeholder (e.g., 'Gallery_no_title')</option>
-                                <option value="omit">Omit title pill</option>
+                                <option value="placeholder">Use a placeholder</option>
+                                <option value="omit">Omit title from name</option>
+                            </select>
+                            <input type="text" id="placeholder-text-folder" class="placeholder-input" placeholder="e.g., Gallery_no_title" maxlength="80" />
+                        </div>
+                        <div class="rule-group">
+                            <label>For single-image galleries<span class="info-icon" data-tooltip="When a post has just one image, the Index pill is normally hidden. Choose 'Always add index' if you want '01' on single-image galleries too.">?</span></label>
+                            <select id="single-file-index-folder">
+                                <option value="never">Don't add index</option>
+                                <option value="always">Always add index</option>
                             </select>
                         </div>
                     </div>
@@ -124,26 +179,42 @@
                 <!-- ZIP MODE -->
                 <div class="panel" id="panel-zip">
                     <div class="builder-group">
-                        <label>ZIP Archive Naming Formula: <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <label>ZIP Archive Naming Formula <span class="helper-text">(Double-click a pill to remove it)</span></label>
                         <div id="dropzone-zip-archive" class="pill-container drop-area"></div>
                     </div>
                     <div class="builder-group">
-                        <label>Image Filename Formula (Inside ZIP): <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <label>Image Filename Formula (Inside ZIP) <span class="helper-text">(Double-click a pill to remove it)</span></label>
                         <div id="dropzone-zip-image" class="pill-container drop-area"></div>
                     </div>
+
+                    <div class="live-preview-section">
+                        <div class="description-box">
+                            <strong>What this does:</strong> <span class="preview-description"></span>
+                        </div>
+                        <div class="preview-box">...</div>
+                    </div>
+
                     <div class="fallback-logic">
                         <div class="rule-group">
-                            <label>If path length exceeds limits:</label>
+                            <label>If path length exceeds limits</label>
                             <select id="truncate-rule-zip">
                                 <option value="auto">Automatically Truncate ZIP Name to Max Length</option>
                                 <option value="prompt">Ask User and Halt Download</option>
                             </select>
                         </div>
                         <div class="rule-group">
-                            <label>If [Title] is missing:</label>
+                            <label>If Title is missing<span class="info-icon" data-tooltip="Posts without a real title (or that look like default Reddit boilerplate) trigger this rule. Choose a placeholder string or omit the Title pill entirely from the name.">?</span></label>
                             <select id="missing-title-rule-zip">
-                                <option value="placeholder">Use Placeholder for Archive Title</option>
-                                <option value="omit">Omit title pill</option>
+                                <option value="placeholder">Use a placeholder</option>
+                                <option value="omit">Omit title from name</option>
+                            </select>
+                            <input type="text" id="placeholder-text-zip" class="placeholder-input" placeholder="e.g., Gallery_no_title" maxlength="80" />
+                        </div>
+                        <div class="rule-group">
+                            <label>For single-image galleries<span class="info-icon" data-tooltip="When a post has just one image, the Index pill is normally hidden. Choose 'Always add index' if you want '01' on single-image galleries too.">?</span></label>
+                            <select id="single-file-index-zip">
+                                <option value="never">Don't add index</option>
+                                <option value="always">Always add index</option>
                             </select>
                         </div>
                     </div>
@@ -152,89 +223,151 @@
                 <!-- INDIVIDUAL MODE -->
                 <div class="panel" id="panel-individual">
                     <div class="builder-group">
-                        <label>Image Filename Naming Formula: <span class="helper-text">(Double-click a pill to remove it)</span></label>
+                        <label>Image Filename Formula <span class="helper-text">(Double-click a pill to remove it)</span></label>
                         <div id="dropzone-individual" class="pill-container drop-area"></div>
                     </div>
+
+                    <div class="live-preview-section">
+                        <div class="description-box">
+                            <strong>What this does:</strong> <span class="preview-description"></span>
+                        </div>
+                        <div class="preview-box">...</div>
+                    </div>
+
                     <div class="fallback-logic">
                         <div class="rule-group">
-                            <label>If filename exceeds limits:</label>
+                            <label>If filename exceeds limits</label>
                             <select id="truncate-rule-individual">
                                 <option value="auto">Automatically Truncate Image Name to Max Length</option>
                                 <option value="prompt">Ask User and Halt Download</option>
                             </select>
                         </div>
                         <div class="rule-group">
-                            <label>If [Title] is missing:</label>
+                            <label>If Title is missing<span class="info-icon" data-tooltip="Posts without a real title (or that look like default Reddit boilerplate) trigger this rule. Choose a placeholder string or omit the Title pill entirely from the name.">?</span></label>
                             <select id="missing-title-rule-individual">
-                                <option value="placeholder">Use Placeholder for Filename Title</option>
-                                <option value="omit">Omit title pill</option>
+                                <option value="placeholder">Use a placeholder</option>
+                                <option value="omit">Omit title from name</option>
+                            </select>
+                            <input type="text" id="placeholder-text-individual" class="placeholder-input" placeholder="e.g., Gallery_no_title" maxlength="80" />
+                        </div>
+                        <div class="rule-group">
+                            <label>For single-image galleries<span class="info-icon" data-tooltip="When a post has just one image, the Index pill is normally hidden. Choose 'Always add index' if you want '01' on single-image galleries too.">?</span></label>
+                            <select id="single-file-index-individual">
+                                <option value="never">Don't add index</option>
+                                <option value="always">Always add index</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Global Formatting -->
-            <div class="format-settings">
-                <div class="setting-group">
-                    <label>Folder Separator</label>
-                    <select id="folder-separator-select">
-                        <option value="space">Space (   )</option>
-                        <option value="underscore">Underscore ( _ )</option>
-                        <option value="dash">Dash ( - )</option>
-                        <option value="none">None (Merged)</option>
-                    </select>
+            <!-- Element Format Options -->
+            <div class="format-options-section">
+                <h2>Element Format Options</h2>
+                <p class="section-helper">These control how each element above is formatted when it appears in your filename.</p>
+                <div class="format-settings">
+                    <div class="setting-group">
+                        <label>Folder Separator<span class="info-icon" data-tooltip="Used inside folder and ZIP archive names to join elements like Subreddit, Author, etc.">?</span></label>
+                        <select id="folder-separator-select">
+                            <option value="space">Space (   )</option>
+                            <option value="underscore">Underscore ( _ )</option>
+                            <option value="dash">Dash ( - )</option>
+                            <option value="none">None (Merged)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Element Separation Character<span class="info-icon" data-tooltip="Joins the elements inside an image filename — e.g., between Title and Index. Static text pills are placed without extra separators on either side.">?</span></label>
+                        <select id="file-separator-select">
+                            <option value="space">Space (   )</option>
+                            <option value="underscore">Underscore ( _ )</option>
+                            <option value="dash">Dash ( - )</option>
+                            <option value="none">None (Merged)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Title Case<span class="info-icon" data-tooltip="Transforms the post title's letter case before it lands in the filename. Applies only to the Title pill — other elements like Subreddit and Author are untouched.">?</span></label>
+                        <select id="title-case-select">
+                            <option value="original">Keep Original</option>
+                            <option value="lower">lowercase</option>
+                            <option value="upper">UPPERCASE</option>
+                            <option value="title">Title Case</option>
+                            <option value="sentence">Sentence case</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Title Space Options<span class="info-icon" data-tooltip="Controls how spaces inside the post title are replaced. 'Match Element Separator' uses the same character as everything else; 'Keep spaces' preserves the original spacing.">?</span></label>
+                        <select id="title-space-select">
+                            <option value="default">Match Element Separator</option>
+                            <option value="keep">Keep spaces in title</option>
+                            <option value="space">Space (   )</option>
+                            <option value="underscore">Underscore ( _ )</option>
+                            <option value="dash">Dash ( - )</option>
+                            <option value="none">None (Merged)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Index Format</label>
+                        <select id="index-format-select">
+                            <option value="standard">01 (Standard)</option>
+                            <option value="parentheses">(01) (Parentheses)</option>
+                            <option value="brackets">[01] (Brackets)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Date Format</label>
+                        <select id="date-format-select">
+                            <option value="yyyy-mm-dd">YYYY MM DD</option>
+                            <option value="dd-mm-yyyy">DD MM YYYY</option>
+                            <option value="dd-mm-yy">DD MM YY</option>
+                            <option value="mm-dd-yyyy">MM DD YYYY</option>
+                            <option value="mm-dd-yy">MM DD YY</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Date Separator</label>
+                        <select id="date-separator-select">
+                            <option value="dash">Dash ( - )</option>
+                            <option value="underscore">Underscore ( _ )</option>
+                            <option value="dot">Dot ( . )</option>
+                            <option value="space">Space (   )</option>
+                            <option value="none">None (Merged)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Time Format</label>
+                        <select id="time-format-select">
+                            <option value="24h">24-Hour (14:30:00)</option>
+                            <option value="12h">12-Hour (02:30 PM)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Unique ID Format<span class="info-icon" data-tooltip="Format of the random ID generated when you drop the Unique ID pill into a formula. Useful for guaranteeing every download has a different name.">?</span></label>
+                        <select id="id-format-select">
+                            <option value="hex">Hexcode (e.g., a1b2c3)</option>
+                            <option value="numeric">Numeric (e.g., 987654)</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="setting-group">
-                    <label>File Separator</label>
-                    <select id="file-separator-select">
-                        <option value="space">Space (   )</option>
-                        <option value="underscore">Underscore ( _ )</option>
-                        <option value="dash">Dash ( - )</option>
-                        <option value="none">None (Merged)</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label>Index Format</label>
-                    <select id="index-format-select">
-                        <option value="standard">01 (Standard)</option>
-                        <option value="parentheses">(01) (Parentheses)</option>
-                        <option value="brackets">[01] (Brackets)</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label>Date Format</label>
-                    <select id="date-format-select">
-                        <option value="yyyy-mm-dd">YYYY MM DD</option>
-                        <option value="dd-mm-yyyy">DD MM YYYY</option>
-                        <option value="dd-mm-yy">DD MM YY</option>
-                        <option value="mm-dd-yyyy">MM DD YYYY</option>
-                        <option value="mm-dd-yy">MM DD YY</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label>Date Separator</label>
-                    <select id="date-separator-select">
-                        <option value="dash">Dash ( - )</option>
-                        <option value="underscore">Underscore ( _ )</option>
-                        <option value="dot">Dot ( . )</option>
-                        <option value="space">Space (   )</option>
-                        <option value="none">None (Merged)</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label>Time Format</label>
-                    <select id="time-format-select">
-                        <option value="24h">24-Hour (14:30:00)</option>
-                        <option value="12h">12-Hour (02:30 PM)</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label>ID Format</label>
-                    <select id="id-format-select">
-                        <option value="hex">Hexcode (e.g., a1b2c3)</option>
-                        <option value="numeric">Numeric (e.g., 987654)</option>
-                    </select>
+            </div>
+
+            <!-- Advanced Tools -->
+            <div class="tools-section">
+                <h2>Backup &amp; Reset</h2>
+                <p class="section-helper">Save your config to share across machines, restore from a previous export, or roll back to defaults if something gets messed up.</p>
+                <div class="tools-row">
+                    <button id="export-btn" class="tool-btn" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export Settings
+                    </button>
+                    <button id="import-btn" class="tool-btn" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Import Settings
+                    </button>
+                    <input type="file" id="import-file-input" accept="application/json,.json" style="display:none" />
+                    <button id="reset-btn" class="tool-btn tool-btn-danger" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        Reset to Defaults
+                    </button>
                 </div>
             </div>
 
