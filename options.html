@@ -5,7 +5,7 @@
     <title>Reddit Gallery Downloader - Configuration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="options.css">
     <script src="Sortable.min.js"></script>
 </head>
@@ -32,8 +32,11 @@
     </div>
 
     <div class="split-layout">
-        <!-- Left Side: Mock Post Context -->
+        <!-- Left Side: Live preview (above) + mock post carousel (below) -->
         <div class="left-panel">
+            <!-- Tree-style preview of every file the current formula would produce, populated by options.js. -->
+            <div class="preview-summary" id="preview-summary"></div>
+
             <div class="mock-post-card">
                 <div class="mock-header">
                     <div class="community-wrapper">
@@ -45,9 +48,16 @@
                         <span class="mock-author">Posted by u/FeatherFanatic</span>
                     </div>
                 </div>
-                <div class="mock-title">The iridescent feathers on this peacock are unreal 🦚</div>
-                <div class="mock-image">
-                    <img src="peacock.jpg" alt="Majestic vertical peacock image">
+                <div class="mock-title">A peacock showing off its feathers</div>
+                <div class="mock-gallery">
+                    <div class="gallery-track" id="gallery-track">
+                        <img src="peacock.jpg" alt="Peacock 1" class="gallery-img">
+                        <img src="peacock2.jpg" alt="Peacock 2" class="gallery-img" data-fallback="peacock.jpg">
+                        <img src="peacock3.jpg" alt="Peacock 3" class="gallery-img" data-fallback="peacock.jpg">
+                    </div>
+                    <button class="gallery-nav gallery-prev" type="button" aria-label="Previous image">‹</button>
+                    <button class="gallery-nav gallery-next" type="button" aria-label="Next image">›</button>
+                    <div class="gallery-counter" id="gallery-counter">1 / 3</div>
                 </div>
             </div>
         </div>
@@ -56,15 +66,15 @@
         <div class="right-panel">
             <div class="header-row">
                 <div>
-                    <h1>Configure File Naming</h1>
-                    <p>Decide exactly what your downloaded files and folders are called. Drag the coloured pills below into a formula, rearrange them, and double-click any pill to remove it. The live preview updates as you build, so you can see the final filename before saving.</p>
+                    <h1>Name your downloads ✨</h1>
+                    <p>Drag the colourful pills below into a formula and watch the live preview update as you build. Double-click any pill to remove it. Hit <strong>Save</strong> when it looks right.</p>
                 </div>
                 <div class="save-wrapper">
                     <button id="save-configuration-btn" class="action-btn" type="button">
                         <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                        <span class="label-default">Save Settings</span>
+                        <span class="label-default">Save</span>
                         <span class="label-saved">Saved</span>
                     </button>
                 </div>
@@ -100,12 +110,14 @@
                 <button class="tab-link" data-mode="zip">ZIP Mode</button>
                 <button class="tab-link" data-mode="individual">Individual Mode</button>
             </div>
-            <p class="section-helper" style="margin-top:-12px;">Pick how a gallery lands on your disk. <strong>Folder</strong> creates a sub-folder per gallery and drops the images inside. <strong>ZIP</strong> bundles the whole gallery into a single archive. <strong>Individual</strong> saves the images straight into your base downloads folder with no wrapper. Each mode has its own naming formula below — switch tabs to configure them.</p>
+
+            <!-- Mode-specific explainer. Content swapped by options.js when the active tab changes. -->
+            <div class="mode-description" id="mode-description"></div>
 
             <!-- Unified Variable Toolbox -->
             <div class="section">
-                <h2>Filename Elements</h2>
-                <p class="section-helper">Drag any element into the formula below. Static text stays put, everything else gets replaced with the real value at download time.</p>
+                <h2>Pick your pieces 🧩</h2>
+                <p class="section-helper">Drag any pill into a formula below. Static text stays put; everything else gets swapped for the real value at download time.</p>
                 <div id="toolbox" class="pill-container toolbox-container">
                     <div class="pill" data-type="subreddit">Subreddit</div>
                     <div class="pill" data-type="author">Author</div>
@@ -132,13 +144,7 @@
                         <div id="dropzone-folder-image" class="pill-container drop-area"></div>
                     </div>
 
-                    <!-- LIVE PREVIEW (moved directly under formula) -->
-                    <div class="live-preview-section">
-                        <div class="description-box">
-                            <strong>What this does:</strong> <span class="preview-description"></span>
-                        </div>
-                        <div class="preview-box">...</div>
-                    </div>
+                    <hr class="section-divider">
 
                     <div class="fallback-logic">
                         <div class="rule-group">
@@ -177,12 +183,7 @@
                         <div id="dropzone-zip-image" class="pill-container drop-area"></div>
                     </div>
 
-                    <div class="live-preview-section">
-                        <div class="description-box">
-                            <strong>What this does:</strong> <span class="preview-description"></span>
-                        </div>
-                        <div class="preview-box">...</div>
-                    </div>
+                    <hr class="section-divider">
 
                     <div class="fallback-logic">
                         <div class="rule-group">
@@ -217,12 +218,7 @@
                         <div id="dropzone-individual" class="pill-container drop-area"></div>
                     </div>
 
-                    <div class="live-preview-section">
-                        <div class="description-box">
-                            <strong>What this does:</strong> <span class="preview-description"></span>
-                        </div>
-                        <div class="preview-box">...</div>
-                    </div>
+                    <hr class="section-divider">
 
                     <div class="fallback-logic">
                         <div class="rule-group">
@@ -253,8 +249,8 @@
 
             <!-- Element Format Options -->
             <div class="format-options-section">
-                <h2>Element Format Options</h2>
-                <p class="section-helper">These control how each element above is formatted when it appears in your filename.</p>
+                <h2>Format tweaks 🎨</h2>
+                <p class="section-helper">These control how each pill above is formatted when it lands in your filename.</p>
                 <div class="format-settings">
                     <div class="setting-group">
                         <label>Folder Separator<span class="info-icon" data-tooltip="Used inside folder and ZIP archive names to join elements like Subreddit, Author, etc.">?</span></label>
@@ -332,8 +328,13 @@
                     <div class="setting-group">
                         <label>Unique ID Format<span class="info-icon" data-tooltip="Format of the random ID generated when you drop the Unique ID pill into a formula. Useful for guaranteeing every download has a different name.">?</span></label>
                         <select id="id-format-select">
-                            <option value="hex">Hexcode (e.g., a1b2c3)</option>
-                            <option value="numeric">Numeric (e.g., 987654)</option>
+                            <option value="hex">Hex 6 (a1b2c3)</option>
+                            <option value="hex8">Hex 8 (a1b2c3d4)</option>
+                            <option value="numeric">Numeric 6 (987654)</option>
+                            <option value="numeric8">Numeric 8 (12345678)</option>
+                            <option value="alpha6">Alphanumeric (k7p2m9)</option>
+                            <option value="letters">Letters (xKjPqM)</option>
+                            <option value="timestamp">Unix timestamp (1733123456)</option>
                         </select>
                     </div>
                 </div>
@@ -341,8 +342,8 @@
 
             <!-- Advanced Tools -->
             <div class="tools-section">
-                <h2>Backup &amp; Reset</h2>
-                <p class="section-helper">Save your config to share across machines, restore from a previous export, or roll back to defaults if something gets messed up.</p>
+                <h2>Backup &amp; reset 💾</h2>
+                <p class="section-helper">Save your setup to a file, share it across machines, or roll back to defaults if something gets weird.</p>
                 <div class="tools-row">
                     <button id="export-btn" class="tool-btn" type="button">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

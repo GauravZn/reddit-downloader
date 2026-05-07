@@ -8,9 +8,9 @@
 })();
 
 const descriptions = {
-    folder: "Creates a subfolder named after the post and saves uncompressed images inside it.",
-    zip: "Bundles all images into a single .zip file to keep your downloads clutter-free.",
-    individual: "Downloads all images directly into the base folder."
+    folder: "One sub-folder per gallery, images tucked inside.",
+    zip: "One .zip per gallery — easy to share.",
+    individual: "Images straight into your downloads folder, no wrapper."
 };
 
 const positionLabels = {

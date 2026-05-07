@@ -36,7 +36,7 @@ Run through this before publishing a new version to the Chrome Web Store. Sectio
 - [ ] **Custom Button Label** is empty by default. Helper text is visible.
 - [ ] **Theme** dropdown lists 11 themes. Selecting each instantly updates the live preview button below.
 - [ ] **Position** and **Size** dropdowns update the meta text under the preview ("Bottom Right · Normal", etc.).
-- [ ] Click **Save Settings**. → Button flashes green with a checkmark, then the popup auto-closes after about 850 ms.
+- [ ] Click **Save**. → Button flashes green with a checkmark, then the popup auto-closes after about 850 ms.
 - [ ] Click **"Customize Naming & Formulas"**. → Options page opens in a new tab.
 
 ---

@@ -4,38 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Downloader Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ffffff;
-            --bg-elev: #f8f9fa;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-            --border: #e5e7eb;
-            --border-strong: #d1d5db;
-            --primary: #1a73e8;
-            --primary-hover: #1557b0;
-            --primary-soft: rgba(26, 115, 232, 0.08);
-            --success: #10b981;
-            --success-soft: rgba(16, 185, 129, 0.12);
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            /* Warm cream palette, mirrors options.css so the two pages feel
+               like the same world. Keep these in sync if you tweak one. */
+            --bg: #fbfaf7;
+            --bg-elev: #f5f3ee;
+            --text-primary: #1f2330;
+            --text-secondary: #5b6273;
+            --text-tertiary: #a1a6b3;
+            --border: #ece8e0;
+            --border-strong: #d9d4ca;
+            --primary: #4f8ff7;
+            --primary-hover: #2f6fd6;
+            --primary-soft: rgba(79, 143, 247, 0.10);
+            --success: #34c2a3;
+            --success-soft: rgba(52, 194, 163, 0.16);
+            --shadow-sm: 0 1px 2px rgba(120, 100, 80, 0.05);
+            --shadow-md: 0 6px 18px rgba(120, 100, 80, 0.08);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg: #0f0f10;
-                --bg-elev: #1a1a1c;
-                --text-primary: #f3f4f6;
-                --text-secondary: #9ca3af;
-                --text-tertiary: #6b7280;
-                --border: #27272a;
-                --border-strong: #3f3f46;
+                --bg: #1a1a1f;
+                --bg-elev: #232329;
+                --text-primary: #f5f4f0;
+                --text-secondary: #b8b6b0;
+                --text-tertiary: #7a7770;
+                --border: #36363d;
+                --border-strong: #4a4a52;
                 --primary: #8ab4f8;
                 --primary-hover: #aecbfa;
-                --primary-soft: rgba(138, 180, 248, 0.12);
-                --success: #34d399;
-                --success-soft: rgba(52, 211, 153, 0.16);
+                --primary-soft: rgba(138, 180, 248, 0.14);
+                --success: #5dd6b9;
+                --success-soft: rgba(93, 214, 185, 0.18);
             }
         }
 
@@ -44,7 +49,7 @@
         body {
             background-color: var(--bg);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             padding: 0;
             width: 340px;
@@ -60,28 +65,30 @@
         }
 
         .header-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
             background: var(--bg-elev);
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .header-text h1 {
             margin: 0;
-            font-size: 15px;
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            font-size: 16px;
             font-weight: 600;
-            letter-spacing: -0.01em;
+            letter-spacing: 0;
             color: var(--text-primary);
         }
 
         .header-text p {
             margin: 2px 0 0 0;
-            font-size: 12px;
+            font-size: 12.5px;
+            font-weight: 500;
             color: var(--text-secondary);
         }
 
@@ -98,12 +105,13 @@
         }
 
         .section-title {
-            font-size: 11px;
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            font-size: 13px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-tertiary);
-            margin: 0 0 8px 0;
+            letter-spacing: 0;
+            text-transform: none;
+            color: var(--text-primary);
+            margin: 0 0 10px 0;
         }
 
         .field {
@@ -125,10 +133,11 @@
         input[type="text"],
         select {
             width: 100%;
-            padding: 9px 12px;
+            padding: 10px 14px;
             font-size: 13px;
+            font-weight: 500;
             border: 1px solid var(--border-strong);
-            border-radius: 7px;
+            border-radius: 12px;
             background-color: var(--bg);
             color: var(--text-primary);
             font-family: inherit;
@@ -190,9 +199,10 @@
             background-color: var(--primary);
             color: #ffffff;
             border: none;
-            padding: 11px;
-            font-size: 13.5px;
-            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 999px;
             width: 100%;
             display: flex;
             align-items: center;
@@ -259,9 +269,10 @@
             background-color: transparent;
             color: var(--text-primary);
             border: 1px solid var(--border-strong);
-            padding: 9px 12px;
+            padding: 11px 14px;
             font-size: 13px;
-            border-radius: 8px;
+            font-weight: 600;
+            border-radius: 999px;
             width: 100%;
             display: flex;
             align-items: center;
@@ -297,10 +308,10 @@
         /* Live preview area */
         .preview-card {
             margin-top: 10px;
-            padding: 18px 14px 14px 14px;
+            padding: 20px 14px 16px 14px;
             background: var(--bg-elev);
-            border: 1px dashed var(--border-strong);
-            border-radius: 8px;
+            border: 1.5px dashed var(--border-strong);
+            border-radius: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -359,7 +370,7 @@
     <div class="body-wrapper">
 
         <div class="section">
-            <h2 class="section-title">Where &amp; How</h2>
+            <h2 class="section-title">Where they go 📁</h2>
             <div class="field">
                 <label for="folderName">Base Download Folder</label>
                 <input type="text" id="folderName" placeholder="reddit_downloads" />
@@ -376,7 +387,7 @@
         </div>
 
         <div class="section">
-            <h2 class="section-title">Button Appearance</h2>
+            <h2 class="section-title">Button vibe 🎨</h2>
             <div class="field">
                 <label for="customButtonLabel">Custom Button Label <span style="font-weight: 400; color: var(--text-tertiary); font-size: 11px;">(optional)</span></label>
                 <input type="text" id="customButtonLabel" placeholder="🚀 Download Gallery" maxlength="40" />
@@ -434,7 +445,7 @@
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </span>
-                <span class="label-default">Save Settings</span>
+                <span class="label-default">Save</span>
                 <span class="label-saved">Saved</span>
             </button>
             <button id="customizeNamingBtn" class="btn-secondary" type="button">

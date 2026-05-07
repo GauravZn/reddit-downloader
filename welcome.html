@@ -6,6 +6,9 @@
     <title>Welcome!</title>
     <link rel="icon" type="image/png" sizes="48x48" href="icon48.png">
     <link rel="shortcut icon" type="image/png" href="icon128.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="welcome.js"></script>
     <style>
         :root {
@@ -65,7 +68,7 @@
         * { box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -88,20 +91,22 @@
         }
 
         .hero-icon { width: 56px; height: 56px; margin-bottom: 24px; border-radius: 12px; }
-        h1 { margin: 0 0 12px 0; font-size: clamp(28px, 3.5vw, 42px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+        h1 { margin: 0 0 12px 0; font-family: 'Fredoka', 'Quicksand', sans-serif; font-size: clamp(30px, 3.6vw, 46px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
         .subtitle { color: var(--text-secondary); font-size: clamp(15px, 1.2vw, 18px); max-width: 400px; margin: 0 0 32px 0; line-height: 1.5; }
 
         .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
 
         .primary-btn {
             background: var(--accent-primary); color: var(--accent-primary-text); border: none;
-            padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.2s, opacity 0.2s;
+            padding: 14px 30px; border-radius: 999px; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s;
+            font-family: inherit;
         }
         .primary-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .secondary-btn {
-            background: transparent; color: var(--text-primary); border: 1px solid var(--border-hover);
-            padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            background: transparent; color: var(--text-primary); border: 1.5px solid var(--border-hover);
+            padding: 14px 30px; border-radius: 999px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            font-family: inherit;
         }
         .secondary-btn:hover { background: var(--border-color); }
 
@@ -115,7 +120,7 @@
         }
 
         .feature-item {
-            background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 16px;
+            background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 22px;
             padding: 24px; display: flex; gap: 18px; transition: all 0.2s ease-in-out;
         }
         .feature-item:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04); }
@@ -123,13 +128,13 @@
         .feature-item.setup { background: var(--success-bg); border-color: var(--success-border); }
         .feature-item.setup:hover { border-color: var(--success-text); }
 
-        .icon-box { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; }
+        .icon-box { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 16px; flex-shrink: 0; }
         .icon-box.setup-icon { background: var(--icon-setup-bg); color: var(--icon-setup-color); }
         .icon-box.name-icon { background: var(--icon-name-bg); color: var(--icon-name-color); }
         .icon-box.zip-icon { background: var(--icon-zip-bg); color: var(--icon-zip-color); }
         .icon-box.paint-icon { background: var(--icon-paint-bg); color: var(--icon-paint-color); }
 
-        .content h3 { margin: 0 0 6px 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+        .content h3 { margin: 0 0 6px 0; font-family: 'Fredoka', 'Quicksand', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0; }
         .feature-item.setup .content h3 { color: var(--success-text); }
         .content p { margin: 0; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
 
@@ -153,8 +158,8 @@
     <div class="layout-wrapper">
         <div class="hero-section">
             <img src="icon128.png" alt="Extension Icon" class="hero-icon">
-            <h1>You're all set.</h1>
-            <p class="subtitle">Reddit Picture Gallery Downloader is now installed, active, and ready to use.</p>
+            <h1>You're all set! 🎉</h1>
+            <p class="subtitle">Reddit Picture Gallery Downloader is installed and ready. Open any Reddit gallery and you'll see the Download button waiting in the corner.</p>
             
             <div class="btn-group">
                 <button class="primary-btn" id="closeWelcomeBtn">Got it, close tab</button>

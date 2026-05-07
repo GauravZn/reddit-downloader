@@ -1,72 +1,70 @@
-@font-face {
-    font-family: 'Lexend Deca';
-    src: url('LexendDeca-VariableFont_wght.ttf') format('truetype');
-    font-weight: 100 900;
-    font-style: normal;
-}
+/* Quicksand for body, Fredoka for chunky friendly headings — both via the
+   <link> in options.html. The local Lexend Deca .ttf was retired with v2.2. */
 
 :root {
-    --bg-color: #ffffff;
-    --bg-elev: #fafbfc;
+    /* Slight warm undertone in the light palette so the page feels softer
+       than a pure-white office UI. Kept subtle so contrast stays good. */
+    --bg-color: #fbfaf7;
+    --bg-elev: #f5f3ee;
     --bg-card: #ffffff;
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --text-tertiary: #9ca3af;
-    --border-color: #e5e7eb;
-    --border-strong: #d1d5db;
+    --text-primary: #1f2330;
+    --text-secondary: #5b6273;
+    --text-tertiary: #a1a6b3;
+    --border-color: #ece8e0;
+    --border-strong: #d9d4ca;
 
-    --google-blue: #1a73e8;
-    --google-blue-hover: #174ea6;
-    --google-blue-soft: rgba(26, 115, 232, 0.08);
-    --google-green: #10b981;
-    --google-green-soft: rgba(16, 185, 129, 0.12);
-    --reddit-orange: #ff4500;
+    --google-blue: #4f8ff7;
+    --google-blue-hover: #2f6fd6;
+    --google-blue-soft: rgba(79, 143, 247, 0.10);
+    --google-green: #34c2a3;
+    --google-green-soft: rgba(52, 194, 163, 0.16);
+    --reddit-orange: #ff7a45;
 
-    --pill-bg: #f3f4f6;
-    --pill-text: #1f2937;
-    --pill-border: #d1d5db;
-    --pill-hover-bg: #e5e7eb;
+    --pill-bg: #fff3e6;
+    --pill-text: #3a2a18;
+    --pill-border: #ffd7b3;
+    --pill-hover-bg: #ffe3c7;
 
-    --pill-id-bg: #fee2e2;
-    --pill-id-text: #b91c1c;
-    --pill-id-border: #fca5a5;
+    --pill-id-bg: #ffe1e1;
+    --pill-id-text: #b9384b;
+    --pill-id-border: #ffb6b6;
 
     --input-bg: #ffffff;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10);
+    --shadow-sm: 0 1px 2px rgba(120, 100, 80, 0.05);
+    --shadow-md: 0 6px 18px rgba(120, 100, 80, 0.08);
+    --shadow-lg: 0 16px 40px rgba(120, 100, 80, 0.14);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-color: #0a0a0b;
-        --bg-elev: #131316;
-        --bg-card: #18181b;
-        --text-primary: #f5f5f7;
-        --text-secondary: #a1a1aa;
-        --text-tertiary: #6b7280;
-        --border-color: #27272a;
-        --border-strong: #3f3f46;
+        --bg-color: #1a1a1f;
+        --bg-elev: #232329;
+        --bg-card: #2a2a31;
+        --text-primary: #f5f4f0;
+        --text-secondary: #b8b6b0;
+        --text-tertiary: #7a7770;
+        --border-color: #36363d;
+        --border-strong: #4a4a52;
 
         --google-blue: #8ab4f8;
         --google-blue-hover: #aecbfa;
-        --google-blue-soft: rgba(138, 180, 248, 0.12);
-        --google-green: #34d399;
-        --google-green-soft: rgba(52, 211, 153, 0.16);
+        --google-blue-soft: rgba(138, 180, 248, 0.14);
+        --google-green: #5dd6b9;
+        --google-green-soft: rgba(93, 214, 185, 0.18);
 
-        --pill-bg: #27272a;
-        --pill-text: #f5f5f7;
-        --pill-border: #3f3f46;
-        --pill-hover-bg: #3f3f46;
+        --pill-bg: #3d2f22;
+        --pill-text: #ffe4cc;
+        --pill-border: #5a4633;
+        --pill-hover-bg: #4d3a2a;
 
-        --pill-id-bg: #451a1a;
-        --pill-id-text: #fca5a5;
-        --pill-id-border: #7f1d1d;
+        --pill-id-bg: #4a1e26;
+        --pill-id-text: #ffb8b8;
+        --pill-id-border: #6b2c3a;
 
-        --input-bg: #131316;
+        --input-bg: #1f1f24;
         --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-        --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-        --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+        --shadow-md: 0 6px 18px rgba(0,0,0,0.4);
+        --shadow-lg: 0 16px 40px rgba(0,0,0,0.5);
     }
 }
 
@@ -75,24 +73,32 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-primary);
-    font-family: 'Lexend Deca', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    line-height: 1.5;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
 }
 
-h1 { font-size: 26px; font-weight: 600; margin: 0 0 6px 0; color: var(--text-primary); letter-spacing: -0.02em; }
+h1 {
+    font-family: 'Fredoka', 'Quicksand', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
 p { color: var(--text-secondary); margin: 0; font-size: 14px; }
 h2 {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-tertiary);
+    font-family: 'Fredoka', 'Quicksand', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0;
+    color: var(--text-primary);
     margin: 0 0 8px 0;
     font-weight: 600;
+    text-transform: none;
 }
 
 * { -ms-overflow-style: none; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
@@ -110,8 +116,18 @@ h2 {
     background-color: var(--bg-elev);
     border-right: 1px solid var(--border-color);
     padding: 32px 32px 32px 48px;
-    display: flex; justify-content: center; align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: 16px;
+    /* Allow scrolling when the preview tree + carousel exceed the viewport,
+       but hide the scrollbar entirely — it looked harsh against the cream bg. */
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+.left-panel::-webkit-scrollbar { display: none; }
 
 .right-panel {
     flex: 1; display: flex; flex-direction: column; padding: 36px 56px;
@@ -134,8 +150,8 @@ h2 {
     background-color: #ffffff;
     color: #000000;
     border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 18px;
+    border-radius: 22px;
+    padding: 20px;
     box-shadow: var(--shadow-lg);
 }
 
@@ -146,7 +162,83 @@ h2 {
 .mock-sub { font-weight: 600; color: #111827; font-size: 13px; }
 .mock-author { font-size: 12px; color: #4b5563; }
 .mock-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #000000; }
-.mock-image img { width: 100%; border-radius: 8px; display: block; max-height: 400px; object-fit: cover; }
+.mock-image img { width: 100%; border-radius: 14px; display: block; max-height: 400px; object-fit: cover; }
+
+/* Carousel inside the mock post. Three peacock images slide horizontally on
+   arrow click; transition is a single transform on the track so it stays
+   smooth even with large images. */
+.mock-gallery {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    aspect-ratio: 4 / 5;
+    background: #1a1a1a;
+}
+.gallery-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+.gallery-img {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #2a2a2a;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transition: background-color 0.2s ease,
+                transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.25s ease;
+    font-family: inherit;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.gallery-prev { left: 12px; padding-right: 2px; }
+.gallery-next { right: 12px; padding-left: 2px; }
+.gallery-nav:hover { background: #ffffff; transform: translateY(-50%) scale(1.08); }
+.gallery-nav:active { transform: translateY(-50%) scale(0.95); }
+/* Linear (non-wrapping) carousel — hide the arrow you can't go past. */
+.gallery-nav.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.gallery-counter {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    z-index: 2;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    letter-spacing: 0.02em;
+}
 
 /* Tabs */
 .tabs {
@@ -167,35 +259,86 @@ h2 {
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* Live preview block */
-.live-preview-section {
-    margin: 16px 0 20px 0;
-    padding: 16px;
+/* Per-mode explainer that sits at the top of each panel — switches with the active tab. */
+.mode-description {
+    padding: 14px 18px;
     background: var(--bg-elev);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-}
-.description-box {
-    background-color: var(--google-blue-soft);
-    border-left: 3px solid var(--google-blue);
-    padding: 10px 14px;
-    border-radius: 0 6px 6px 0;
-    margin-bottom: 12px;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
 }
-.preview-description { color: var(--text-primary); }
-.preview-description strong { color: var(--google-blue); font-weight: 600; }
-
-.preview-box {
-    font-size: 13px; padding: 12px 16px;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 8px; word-break: break-all;
+.mode-description strong { color: var(--text-primary); font-weight: 600; }
+.mode-description code {
+    background: var(--bg-card);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     color: var(--google-blue);
+    border: 1px solid var(--border-color);
+}
+
+/* Visual break between formula-builder area and the fallback-rule grid below it. */
+.section-divider {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 20px 0;
+}
+
+/* Live preview tree on the left panel. Shows the actual filenames the current
+   formula would produce, including the per-image trailing index. Populated by
+   options.js; mirrors background.js's download path so what you see is what
+   lands on disk. */
+.preview-summary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 14px 18px;
+    margin-bottom: 4px;
+    width: 100%;
+    box-shadow: var(--shadow-sm);
+}
+
+.preview-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 12.5px;
     line-height: 1.5;
-    white-space: pre-wrap;
+}
+.preview-row.preview-indent-1 { padding-left: 20px; }
+.preview-row.preview-indent-2 { padding-left: 40px; }
+
+.preview-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+}
+.preview-icon svg { width: 100%; height: 100%; display: block; }
+/* Per-row color tinting was removed when the SVGs gained their own intrinsic
+   Windows-Explorer colors. The .is-base / .is-folder / .is-archive / .is-image
+   classes are still on the rows in case CSS hooks are useful later. */
+
+.preview-name {
+    flex: 1;
+    min-width: 0;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 11.5px;
+    color: var(--text-primary);
+    font-weight: 500;
+    /* Wrap at word/space boundaries first; only break mid-word when a single
+       token is genuinely wider than the column. Prevents the ugly "showing of
+       f its feat hers" mid-word splits. */
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 /* Builder dropzones */
@@ -211,20 +354,20 @@ h2 {
 }
 .helper-text { font-size: 11px; color: var(--text-tertiary); font-weight: 400; font-style: italic; }
 
-.pill-container { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-radius: 10px; min-height: 52px; }
-.toolbox-container { background-color: var(--bg-elev); padding: 12px; margin-bottom: 0; border: 1px solid var(--border-color); }
-.drop-area { background-color: var(--bg-card); border: 1.5px dashed var(--border-strong); transition: border-color 0.2s, background 0.2s; }
-.drop-area:hover { border-color: var(--text-secondary); background-color: var(--bg-elev); }
+.pill-container { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px; border-radius: 16px; min-height: 56px; }
+.toolbox-container { background-color: var(--bg-elev); padding: 14px; margin-bottom: 0; border: 1px solid var(--border-color); }
+.drop-area { background-color: var(--bg-card); border: 2px dashed var(--border-strong); }
+/* No hover effect on drop zones — Sortable.js handles drag-over styling natively. */
 
 .pill {
-    background-color: var(--pill-bg); color: var(--pill-text); padding: 8px 16px; border-radius: 20px;
-    cursor: grab; user-select: none; font-weight: 500; font-size: 13px; border: 1px solid var(--pill-border); transition: all 0.15s;
+    background-color: var(--pill-bg); color: var(--pill-text); padding: 9px 18px; border-radius: 999px;
+    cursor: grab; user-select: none; font-weight: 600; font-size: 13px; border: 1px solid var(--pill-border); transition: all 0.15s;
 }
 .pill:active { cursor: grabbing; }
-.pill:hover { background-color: var(--pill-hover-bg); transform: translateY(-1px); }
+.pill:hover { background-color: var(--pill-hover-bg); transform: translateY(-1px) scale(1.03); box-shadow: var(--shadow-sm); }
 .pill.unique-id { background-color: var(--pill-id-bg); color: var(--pill-id-text); border-color: var(--pill-id-border); }
-.pill.custom-text-pill { background-color: transparent; color: var(--google-blue); border: 1px dashed var(--border-strong); cursor: pointer; }
-.pill.custom-text-pill:hover { border-color: var(--google-blue); background-color: var(--google-blue-soft); }
+.pill.custom-text-pill { background-color: transparent; color: var(--google-blue); border: 1.5px dashed var(--border-strong); cursor: pointer; }
+.pill.custom-text-pill:hover { border-color: var(--google-blue); background-color: var(--google-blue-soft); transform: translateY(-1px) scale(1.03); }
 
 .pill.user-typed-text {
     background-color: var(--google-blue-soft);
@@ -240,25 +383,22 @@ h2 {
 
 .pill-input { background-color: transparent; color: var(--google-blue); border: none; font-size: 13px; font-weight: 600; padding: 0; margin: 0; outline: none; width: auto; min-width: 40px; font-family: inherit; }
 
-/* Per-mode rules — grid so labels and selects breathe */
+/* Per-mode rules — just the grid, no wrapper card. The hr above
+   (.section-divider) already separates "formula" from "rules". */
 .fallback-logic {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-    margin-top: 12px;
-    padding: 18px;
-    background: var(--bg-elev);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+    gap: 22px;
+    margin-top: 4px;
 }
 
 /* Element Format Options — distinct grouped section */
 .format-options-section {
     margin-top: 32px;
-    padding: 24px;
+    padding: 26px;
     background: var(--bg-elev);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 20px;
 }
 .format-options-section h2 { margin-bottom: 4px; }
 .format-options-section .section-helper { margin-bottom: 18px; }
@@ -290,8 +430,8 @@ h2 {
 
 select, input[type="text"] {
     width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 11px 16px;
+    border-radius: 12px;
     border: 1px solid var(--border-strong);
     background-color: var(--input-bg);
     color: var(--text-primary);
@@ -328,9 +468,9 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
     background-color: var(--text-primary);
     color: var(--bg-color);
     padding: 14px 22px;
-    border-radius: 10px;
+    border-radius: 999px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     box-shadow: var(--shadow-lg);
     z-index: 9999;
     opacity: 0;
@@ -363,11 +503,11 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
     background-color: var(--google-blue);
     color: #ffffff;
     border: none;
-    padding: 10px 22px;
-    font-size: 13.5px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    border-radius: 8px;
+    padding: 11px 26px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0;
+    border-radius: 999px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
@@ -474,7 +614,7 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
     padding: 22px 24px 24px 24px;
     background: var(--bg-elev);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 20px;
     margin-bottom: 24px;
 }
 .tools-row {
@@ -487,13 +627,13 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 16px;
+    padding: 11px 18px;
     background-color: var(--bg-card);
     color: var(--text-primary);
     border: 1px solid var(--border-strong);
-    border-radius: 8px;
+    border-radius: 999px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.15s;
@@ -516,20 +656,20 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
 .confirm-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.40);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 9998;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
 }
 .confirm-overlay.show { display: flex; }
 .confirm-dialog {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 22px 24px;
-    max-width: 380px;
+    border-radius: 20px;
+    padding: 24px 26px;
+    max-width: 400px;
     width: calc(100vw - 40px);
     box-shadow: var(--shadow-lg);
 }
@@ -537,8 +677,8 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
 .confirm-dialog p { margin: 0 0 18px 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; }
 .confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .confirm-actions button {
-    padding: 8px 16px;
-    border-radius: 7px;
+    padding: 10px 20px;
+    border-radius: 999px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -554,10 +694,10 @@ option { background-color: var(--bg-color); color: var(--text-primary); font-wei
 /* Behavior settings (top toggles) */
 .behavior-settings {
     margin-bottom: 28px;
-    padding: 20px 22px;
+    padding: 22px 24px;
     background: var(--bg-elev);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 20px;
 }
 .toggle-group {
     display: flex;

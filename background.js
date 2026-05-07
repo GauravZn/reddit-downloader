@@ -89,7 +89,26 @@ const formatIndex = (index, format) => {
 };
 
 const generateUniqueId = (format) => {
-    if (format === 'numeric') return Math.floor(100000 + Math.random() * 900000).toString();
+    // Pulls a chunk of randomness for whichever shape the user picked. Keep
+    // this in sync with the dropdown in options.html and the preview map in
+    // options.js (ID_FORMAT_PREVIEWS).
+    if (format === 'numeric')   return Math.floor(100000 + Math.random() * 900000).toString();
+    if (format === 'numeric8')  return Math.floor(10000000 + Math.random() * 90000000).toString();
+    if (format === 'hex8')      return Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
+    if (format === 'alpha6') {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let s = '';
+        for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+    }
+    if (format === 'letters') {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        let s = '';
+        for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+    }
+    if (format === 'timestamp') return Math.floor(Date.now() / 1000).toString();
+    // Default: hex 6 (the original behaviour pre-v2.2).
     return Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 };
 
