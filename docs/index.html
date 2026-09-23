@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Privacy Policy · Reddit Picture Gallery Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;600;700&display=swap">
+    <style>
+        :root {
+            --bg-main: #fbfaf7;
+            --bg-soft: #f1ede4;
+            --text-primary: #1f2330;
+            --text-secondary: #5b6273;
+            --text-tertiary: #a1a6b3;
+            --border-color: #e6e0d4;
+            --hairline: rgba(31, 35, 48, 0.08);
+            --accent: #b18a5e;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-main: #22222a;
+                --bg-soft: #2d2d36;
+                --text-primary: #f5f4f0;
+                --text-secondary: #c0bdb6;
+                --text-tertiary: #8b8881;
+                --border-color: #3a3a44;
+                --hairline: rgba(255, 255, 255, 0.08);
+                --accent: #dbb481;
+            }
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            background-color: var(--bg-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.65;
+            padding: 64px 6% 96px 6%;
+        }
+
+        .page-wrapper { max-width: 720px; margin: 0 auto; }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            font-size: clamp(30px, 4.4vw, 42px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .updated { color: var(--text-tertiary); font-size: 13.5px; margin: 0 0 40px 0; }
+
+        h2 {
+            margin: 40px 0 12px 0;
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        p, li { font-size: 15px; color: var(--text-secondary); }
+        p { margin: 0 0 14px 0; }
+        ul { margin: 0 0 14px 0; padding-left: 22px; }
+        li { margin-bottom: 7px; }
+        strong { color: var(--text-primary); }
+
+        a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1.5px solid var(--accent);
+            padding-bottom: 1px;
+        }
+        a:hover { opacity: 0.7; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 0 0 20px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+        th {
+            background: var(--bg-soft);
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-tertiary);
+        }
+        td { color: var(--text-secondary); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .callout {
+            background: var(--bg-soft);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 0 0 24px 0;
+        }
+        .callout p:last-child { margin-bottom: 0; }
+
+        footer {
+            margin-top: 56px;
+            padding-top: 28px;
+            border-top: 1px solid var(--hairline);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 600px) { body { padding: 36px 6% 64px 6%; } }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+
+        <h1>Privacy Policy</h1>
+        <p class="updated" style="margin-bottom:8px">Chrome extension &middot; <a href="https://chrome.google.com/webstore/devconsole" style="border:none">Reddit Picture Gallery Downloader</a></p>
+        <p class="updated">Reddit Picture Gallery Downloader · Last updated 17 September 2026</p>
+
+        <div class="callout">
+            <p><strong>The short version.</strong> The extension does not track you, has no analytics, and never sends the pages you browse or the images you download to anyone. The only thing it ever transmits is your licence key — and, if you use the unlock-by-email option, the email address you paid with.</p>
+        </div>
+
+        <h2>What is collected, and when</h2>
+
+        <table>
+            <thead>
+                <tr><th>Data</th><th>When it is sent</th><th>Where it goes</th><th>Why</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Your licence key</td>
+                    <td>On activation, then at most once every 12 hours</td>
+                    <td>The extension's licence server (a Cloudflare Worker)</td>
+                    <td>To confirm the licence is paid and still valid</td>
+                </tr>
+                <tr>
+                    <td>Your email address</td>
+                    <td>Only when you type it into “Already paid? Unlock it here”</td>
+                    <td>The same licence server</td>
+                    <td>To find the licence created by your payment</td>
+                </tr>
+                <tr>
+                    <td>Email, payment amount, transaction ID</td>
+                    <td>When you pay</td>
+                    <td>Sent by <strong>Ko-fi</strong> (or PayPal) to the licence server</td>
+                    <td>To create your licence automatically</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Nothing else leaves your device. In particular, the extension does <strong>not</strong> send: the Reddit pages you visit, your Reddit account or username, the images or galleries you download, your browsing history, or your IP address to anyone other than as an unavoidable part of the network requests above.</p>
+
+        <h2>What is stored on your own device</h2>
+        <ul>
+            <li>Your settings — filename templates, download mode, theme, and similar preferences.</li>
+            <li>Your licence key and the cached result of the last licence check.</li>
+            <li>A count of how many files you have downloaded, used only for the in-page milestone message.</li>
+            <li>A count of how many galleries you have downloaded, used only to track your 100 free downloads. It is never sent anywhere.</li>
+        </ul>
+        <p>These are kept in <strong>Chrome's <code>storage.sync</code></strong>, which means Chrome itself replicates them across the browsers you are signed into, via your Google account. That replication is performed by Google, not by this extension, and is subject to Google's own privacy policy. If you would rather it did not sync, sign out of Chrome sync or disable syncing for extensions in Chrome's settings.</p>
+
+        <h2>Payments</h2>
+        <p>Payments are handled entirely by <a href="https://ko-fi.com" target="_blank" rel="noopener">Ko-fi</a> and its payment processors (and, if used, PayPal). This extension and its developer never see or store your card details. Ko-fi sends the licence server only your email address, the amount, and a transaction reference. Ko-fi's own <a href="https://more.ko-fi.com/privacy" target="_blank" rel="noopener">privacy policy</a> governs what they collect.</p>
+
+        <h2>How long data is kept</h2>
+        <p>Licence records — email address, plan, amount, transaction reference and dates — are kept on the licence server for as long as the licence exists, because that record <em>is</em> the licence. Rate-limiting records are discarded automatically after ten minutes.</p>
+
+        <h2>Your choices</h2>
+        <ul>
+            <li><strong>Deletion.</strong> Email <a href="mailto:gauravjain.tech@gmail.com">gauravjain.tech@gmail.com</a> and your licence record will be deleted. Deleting it also deactivates the licence, so this is a request to make when you are done with the extension.</li>
+            <li><strong>Access.</strong> Ask at the same address and you will be told exactly what the licence record holds for you.</li>
+            <li><strong>Local data.</strong> Uninstalling the extension removes everything stored on your device.</li>
+        </ul>
+
+        <h2>Not sold, not shared</h2>
+        <p>None of this data is sold, rented, or shared with third parties. It is not used for advertising, profiling, or any purpose other than making the licence work. There is no analytics or telemetry of any kind in this extension.</p>
+
+        <h2>Children</h2>
+        <p>The extension is not directed at children under 13 and does not knowingly collect their data.</p>
+
+        <h2>Changes</h2>
+        <p>If this policy changes in a way that affects what is collected, the date at the top will change and the update will be noted in the extension's release notes.</p>
+
+        <footer>
+            Questions, deletion requests, or a licence that won't activate:
+            <a href="mailto:gauravjain.tech@gmail.com">gauravjain.tech@gmail.com</a>.
+        </footer>
+
+    </div>
+</body>
+
+</html>
